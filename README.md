@@ -11,14 +11,6 @@
 * **Data Params Required:**
   * tenant_id: String
   * audios: Array[]
-* **Success Response:**
-  * **Code:** 200 <br />
-    <!-- **Content:** `{ id : 12 }` -->
-<!-- * **Error Response:**
-   * **Code:** 401 UNAUTHORIZED <br />
-    **Content:** `{ error : "Log in" }`
-  * **Code:** 422 UNPROCESSABLE ENTRY <br />
-    **Content:** `{ error : "Email Invalid" }` -->
 * **Element Definition:** audios Array[]: 
  ```
 {
@@ -28,7 +20,15 @@
 }
 ```
 * **Element Definition:** metadata: JSON String [Metadata JSON SCHEMA](VOC-Metadata.schema.json)
-   
+  
+* **Success Response:**
+  * **Code:** 200 <br />
+    <!-- **Content:** `{ id : 12 }` -->
+<!-- * **Error Response:**
+   * **Code:** 401 UNAUTHORIZED <br />
+    **Content:** `{ error : "Log in" }`
+  * **Code:** 422 UNPROCESSABLE ENTRY <br />
+    **Content:** `{ error : "Email Invalid" }` -->
     
 ### **/ingestor/v1/input/state**
  Indica y registra TODOS los cambios de estado en el procesamiento de cada archivo por el microservicio INPUT
