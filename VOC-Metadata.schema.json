@@ -1,0 +1,159 @@
+{
+  "title": "VOC audio metadata schema",
+  "description": "VOC audio metadata schema v1",
+  "type": "object",
+  "properties": {
+    "nombre_audio": {
+      "type": "string",
+	  "description": "Name of original audio file"
+    },
+    "id": {
+      "type": "string",
+	  "description": "Call ID"
+    },
+    "nombre_agente": {
+      "type": "string",
+	  "description": "Name of agent into the call"
+    },
+    "agentid": {
+      "type": "string",
+	  "description": "Id of agent into the call"
+    },
+    "ANI": {
+      "type": "string",
+	  "description": "Call ANI"
+    },
+    "datetime": {
+      "type": "string",
+	  "description": "Time when the call was placed, in format YYYY-MM-DD HH:MM:SS",
+	  "minLength": 19,
+	  "maxLength": 19
+    },
+    "record_start_time": {
+      "type": "string",
+	  "description": "Time when the recording call started, in format YYYY-MM-DD HH:MM:SS",
+	  "minLength": 19,
+	  "maxLength": 19
+    },
+    "record_end_time": {
+      "type": "string",
+	  "description": "Time when ends the recording call, in format YYYY-MM-DD HH:MM:SS",
+	  "minLength": 19,
+	  "maxLength": 19
+    },
+    "record_duracion_audio": {
+      "type": "string",
+	  "description": "Recording duration, in format HH:MM:SS",
+	  "minLength": 8,
+	  "maxLength": 8
+    },
+    "tipo_llamada": {
+      "type": "string",
+	  "description": "Call Direction"
+	  "pattern": "^(In|Out)bound$"
+    },
+    "Custom_data_01": {
+      "type": "string"
+    },
+    "Custom_data_02": {
+      "type": "string"
+    },
+    "Custom_data_03": {
+      "type": "string"
+    },
+    "Custom_data_04": {
+      "type": "string"
+    },
+    "Custom_data_05": {
+      "type": "string"
+    },
+    "Custom_data_06": {
+      "type": "string"
+    },
+    "Custom_data_07": {
+      "type": "string"
+    },
+    "Custom_data_08": {
+      "type": "string"
+    },
+    "Custom_data_09": {
+      "type": "string"
+    },
+    "Custom_data_10": {
+      "type": "string"
+    },
+    "Custom_data_11": {
+      "type": "string"
+    },
+    "Custom_data_12": {
+      "type": "string"
+    },
+    "Custom_data_13": {
+      "type": "string"
+    },
+    "Custom_data_14": {
+      "type": "string"
+    },
+    "Custom_data_15": {
+      "type": "string"
+    },
+    "Custom_data_16": {
+      "type": "string"
+    },
+    "Custom_data_17": {
+      "type": "string"
+    },
+    "Custom_data_18": {
+      "type": "string"
+    },
+    "Custom_data_19": {
+      "type": "string"
+    },
+    "Custom_data_20": {
+      "type": "string"
+    },
+    "Custom_data_21": {
+      "type": "string"
+    },
+    "Custom_data_22": {
+      "type": "string"
+    },
+    "Custom_data_23": {
+      "type": "string"
+    },
+    "Custom_data_24": {
+      "type": "string"
+    },
+    "Custom_data_25": {
+      "type": "string"
+    },
+    "Custom_data_26": {
+      "type": "string"
+    },
+    "Custom_data_27": {
+      "type": "string"
+    },
+    "Custom_data_28": {
+      "type": "string"
+    },
+    "Custom_data_29": {
+      "type": "string"
+    },
+    "Custom_data_30": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true,
+  "required": [
+    "nombre_audio",
+    "id",
+    "nombre_agente",
+    "agentid",
+    "ANI",
+    "datetime",
+    "record_start_time",
+    "record_end_time",
+    "record_duracion_audio",
+    "tipo_llamada"
+  ]
+}
