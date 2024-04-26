@@ -10,8 +10,7 @@
   `POST`
 * **Data Params Required:**
   * tenant_id: String
-  * audios: Array
-    * metadata: JSON String 
+  * audios: Array[]
 * **Success Response:**
   * **Code:** 200 <br />
     <!-- **Content:** `{ id : 12 }` -->
@@ -20,8 +19,7 @@
     **Content:** `{ error : "Log in" }`
   * **Code:** 422 UNPROCESSABLE ENTRY <br />
     **Content:** `{ error : "Email Invalid" }` -->
-* **Notas:**
-  * metadata: JSON String **Definition**
+* **Element Definition:** audios Array[]: 
  ```
 {
   source: String    //Ruta completa para la descarga del audio
@@ -29,6 +27,8 @@
   metadata: String   //Metada que es traspasada SIN CAMBIO hacia el transcriptor
 }
 ```
+* **Element Definition:** metadata: JSON String [Metadata JSON SCHEMA](VOC-Metadata.schema.json)
+   
     
 ### **/ingestor/v1/input/state**
  Indica y registra TODOS los cambios de estado en el procesamiento de cada archivo por el microservicio INPUT
