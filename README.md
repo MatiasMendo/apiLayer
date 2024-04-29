@@ -1,4 +1,4 @@
-# API LAYER Module
+# API REST LAYER Module
 
 
 ----
