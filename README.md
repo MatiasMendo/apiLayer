@@ -23,7 +23,63 @@
   
 * **Success Response:**
   * **Code:** 200 <br />
-    <!-- **Content:** `{ id : 12 }` -->
+    ```
+       {
+          job_id : String  //Job que identifica esta ejecución
+        }
+    ``` 
+<!-- * **Error Response:**
+   * **Code:** 401 UNAUTHORIZED <br />
+    **Content:** `{ error : "Log in" }`
+  * **Code:** 422 UNPROCESSABLE ENTRY <br />
+    **Content:** `{ error : "Email Invalid" }` -->
+
+### **/ingestor/v1/new**
+ Agrega nuevos audios a una ejecución previa, para procesamiento y descarga de audios por parte del **Ingestor**.
+* **Method:**
+  `PATCH`
+* **Data Params Required:**
+  * tenant_id: String
+  * job_id: String //job_id de la ejecución al cual agregar nuevos audios
+  * audios: Array[]
+* **Element Definition:** audios Array[]: 
+ ```
+{
+  source: String    //Ruta completa para la descarga del audio
+  duration: Numeric  //Duración del audio en segundos
+  metadata: String   //Metada que es traspasada SIN CAMBIO hacia el transcriptor
+}
+```
+* **Element Definition:** metadata: JSON String [Metadata JSON SCHEMA](VOC-Metadata.schema.json)
+  
+* **Success Response:**
+  * **Code:** 200 <br />
+    ```
+       {
+          job_id : String  //Job que identifica esta ejecución
+        }
+    ``` 
+<!-- * **Error Response:**
+   * **Code:** 401 UNAUTHORIZED <br />
+    **Content:** `{ error : "Log in" }`
+  * **Code:** 422 UNPROCESSABLE ENTRY <br />
+    **Content:** `{ error : "Email Invalid" }` -->
+
+
+### **/ingestor/v1/metadata**
+ Extrae la metadata para un archivo determinado.
+* **Method:**
+  `GET`
+* **Data Params Required:**
+  * tenant_id: String
+  * file_id: String
+* **Success Response:**
+  * **Code:** 200 <br />
+      ```
+       {
+          metadata : String  //String con el contenido de la metada del audio consultado
+        }
+    ``` 
 <!-- * **Error Response:**
    * **Code:** 401 UNAUTHORIZED <br />
     **Content:** `{ error : "Log in" }`
