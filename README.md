@@ -93,7 +93,7 @@
 * **Data Params Required:**
   * tenant_id: String
   * file_id: String
-  * state: "STARTING | FINISHED | ERROR"
+  * state: "STARTING | FINISHED | ERROR | BAD_FILE"
 * **Success Response:**
   * **Code:** 200 <br />
     <!-- **Content:** `{ id : 12 }` -->
@@ -110,7 +110,7 @@
 * **Data Params Required: **
   * tenant_id: String
   * file_id: String
-  * state: "STARTING | FINISHED | ERROR"
+  * state: "STARTING | FINISHED | ERROR | BAD_FILE"
 * **Success Response:**
   * **Code:** 200 <br />
     <!-- **Content:** `{ id : 12 }` -->
@@ -128,7 +128,7 @@
 * **Data Params Required: **
   * tenant_id: String
   * file_id: String
-  * state: "STARTING | FINISHED | ERROR"
+  * state: "STARTING | FINISHED | ERROR | BAD_FILE"
 * **Success Response:**
   * **Code:** 200 <br />
     <!-- **Content:** `{ id : 12 }` -->
@@ -146,7 +146,7 @@
 * **Data Params Required: **
   * tenant_id: String
   * file_id: String
-  * state: "STARTING | FINISHED | ERROR"
+  * state: "STARTING | FINISHED | ERROR | BAD_FILE"
 * **Success Response:**
   * **Code:** 200 <br />
     <!-- **Content:** `{ id : 12 }` -->
