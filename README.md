@@ -11,28 +11,15 @@
 * **Data Params Required:**
   * tenant_id: String
   * audios: Array[]
-* **Element Definition:** audios Array[]: 
- ```
-{
-  source: String    //Ruta completa para la descarga del audio
-  duration: Numeric  //Duración del audio en segundos
-  metadata: String   //Metada que es traspasada SIN CAMBIO hacia el transcriptor
-}
-```
-* **Element Definition:** metadata: JSON String [Metadata JSON SCHEMA](VOC-Metadata.schema.json)
+  * **Element Definition:** audios Array[]:
+    * source: String    //Ruta completa para la descarga del audio
+    * duration: Numeric  //Duración del audio en segundos
+    * metadata: String   //Metada que es traspasada SIN CAMBIO hacia el transcriptor   
+  * **Element Definition:** metadata: JSON String [Metadata JSON SCHEMA](VOC-Metadata.schema.json)
 * **Success Response:**
   * **Code:** 200 <br />
-    ```
-       {
-          tenant_id: String
-          job_id : String  //Job que identifica esta ejecución
-        }
-    ``` 
-<!-- * **Error Response:**
-   * **Code:** 401 UNAUTHORIZED <br />
-    **Content:** `{ error : "Log in" }`
-  * **Code:** 422 UNPROCESSABLE ENTRY <br />
-    **Content:** `{ error : "Email Invalid" }` -->
+    * tenant_id: String
+    * job_id : String  //Job que identifica esta ejecución
 
 
 ## **/ingestor/v1/new**
@@ -43,28 +30,15 @@
   * tenant_id: String
   * job_id: String //job_id de la ejecución al cual agregar nuevos audios
   * audios: Array[]
-* **Element Definition:** audios Array[]: 
- ```
-{
-  source: String    //Ruta completa para la descarga del audio
-  duration: Numeric  //Duración del audio en segundos
-  metadata: String   //Metada que es traspasada SIN CAMBIO hacia el transcriptor
-}
-```
-* **Element Definition:** metadata: JSON String [Metadata JSON SCHEMA](VOC-Metadata.schema.json)
+  * **Element Definition:** audios Array[]: 
+    * source: String    //Ruta completa para la descarga del audio
+    * duration: Numeric  //Duración del audio en segundos
+    * metadata: String   //Metada que es traspasada SIN CAMBIO hacia el transcriptor
+  * **Element Definition:** metadata: JSON String [Metadata JSON SCHEMA](VOC-Metadata.schema.json)
 * **Success Response:**
   * **Code:** 200 <br />
-    ```
-       {
-          tenant_id: String
-          job_id : String  //Job que identifica esta ejecución
-        }
-    ``` 
-<!-- * **Error Response:**
-   * **Code:** 401 UNAUTHORIZED <br />
-    **Content:** `{ error : "Log in" }`
-  * **Code:** 422 UNPROCESSABLE ENTRY <br />
-    **Content:** `{ error : "Email Invalid" }` -->
+    * tenant_id: String
+    * job_id : String  //Job que identifica esta ejecución
 
 
 ## **/ingestor/v1/job**
@@ -76,21 +50,31 @@
   * limit: Numeric //Número máximo de audios a obtener en esta iteración de consulta
 * **Success Response:**
   * **Code:** 200 <br />
-    ```
-       {
-          audios : Array[]  //Listado de audios a procesar
-       }
-    ```
-* **Element Definition:** audios Array[]: 
- ```
-{
-  tenant_id: String
-  job_id: String //Id de la ejecución a la cual pertenece este audio
-  source: String    //Ruta completa para la descarga del audio
-  duration: Numeric  //Duración del audio en segundos
-  file_id: String   //Nombre e identificador que deberá tener el archivo durante el proceso de ingestión (no incluye la extensión)
-}
-```
+    * audios : Array[]  //Listado de audios a procesar
+    * **Element Definition:** audios Array[]: 
+      * tenant_id: String
+      * job_id: String //Id de la ejecución a la cual pertenece este audio
+      * source: String    //Ruta completa para la descarga del audio
+      * duration: Numeric  //Duración del audio en segundos
+      * file_id: String   //Nombre e identificador que deberá tener el archivo durante el proceso de ingestión (no incluye la extensión)
+
+
+## **/ingestor/v1/job/stats**
+ Extrae las estadísticas metadata para un archivo determinado.
+* **Method:**
+  `GET`
+* **Data Params Required:**
+  * tenant_id: String
+  * job_id: String
+* **Success Response:**
+  * **Code:** 200 <br />
+    * duration: Numeric  //Segundos de audios que han sido subidos correctamente por este job al momento de la consulta
+    * files:
+      * total: Numeric // Número de archivos incluidos en este job
+      * processing: Numeric //Número de archivos que están en proceso
+      * done: Numeric //Número de archivos ya procesados correctamente
+      * error: Numeric    //Número de archivos ya procesados pero con error   
+
 
 ## **/ingestor/v1/metadata**
  Extrae la metadata para un archivo determinado.
@@ -101,16 +85,7 @@
   * file_id: String
 * **Success Response:**
   * **Code:** 200 <br />
-      ```
-       {
-          metadata : String  //String con el contenido de la metada del audio consultado
-        }
-    ``` 
-<!-- * **Error Response:**
-   * **Code:** 401 UNAUTHORIZED <br />
-    **Content:** `{ error : "Log in" }`
-  * **Code:** 422 UNPROCESSABLE ENTRY <br />
-    **Content:** `{ error : "Email Invalid" }` -->
+    * metadata : String  //String con el contenido de la metada del audio consultado
 
     
 ## **/ingestor/v1/input/state**
@@ -123,12 +98,6 @@
   * state: "STARTING | FINISHED | ERROR | BAD_FILE"
 * **Success Response:**
   * **Code:** 200 <br />
-    <!-- **Content:** `{ id : 12 }` -->
-<!-- * **Error Response:**
-   * **Code:** 401 UNAUTHORIZED <br />
-    **Content:** `{ error : "Log in" }`
-  * **Code:** 422 UNPROCESSABLE ENTRY <br />
-    **Content:** `{ error : "Email Invalid" }` -->
 
 
 ## **/ingestor/v1/converter/state**
@@ -141,12 +110,6 @@
   * state: "STARTING | FINISHED | ERROR | BAD_FILE"
 * **Success Response:**
   * **Code:** 200 <br />
-    <!-- **Content:** `{ id : 12 }` -->
-<!-- * **Error Response:**
-   * **Code:** 401 UNAUTHORIZED <br />
-    **Content:** `{ error : "Log in" }`
-  * **Code:** 422 UNPROCESSABLE ENTRY <br />
-    **Content:** `{ error : "Email Invalid" }` -->
 
     
 ## **/ingestor/v1/zipper/state**
@@ -159,12 +122,7 @@
   * state: "STARTING | FINISHED | ERROR | BAD_FILE"
 * **Success Response:**
   * **Code:** 200 <br />
-    <!-- **Content:** `{ id : 12 }` -->
-<!-- * **Error Response:**
-   * **Code:** 401 UNAUTHORIZED <br />
-    **Content:** `{ error : "Log in" }`
-  * **Code:** 422 UNPROCESSABLE ENTRY <br />
-    **Content:** `{ error : "Email Invalid" }` -->
+
 
     
 ## **/ingestor/v1/uploader/state**
@@ -177,9 +135,4 @@
   * state: "STARTING | FINISHED | ERROR | BAD_FILE"
 * **Success Response:**
   * **Code:** 200 <br />
-    <!-- **Content:** `{ id : 12 }` -->
-<!-- * **Error Response:**
-   * **Code:** 401 UNAUTHORIZED <br />
-    **Content:** `{ error : "Log in" }`
-  * **Code:** 422 UNPROCESSABLE ENTRY <br />
-    **Content:** `{ error : "Email Invalid" }` -->
+
