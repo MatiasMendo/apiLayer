@@ -2,9 +2,9 @@
 
 
 ----
-## API Definition
+# API Definition
 
-### **/ingestor/v1/new**
+## **/ingestor/v1/new**
  Inserta una nueva ejecución para procesamiento y descarga de audios por parte del **Ingestor**.
 * **Method:**
   `POST`
@@ -20,11 +20,11 @@
 }
 ```
 * **Element Definition:** metadata: JSON String [Metadata JSON SCHEMA](VOC-Metadata.schema.json)
-  
 * **Success Response:**
   * **Code:** 200 <br />
     ```
        {
+          tenant_id: String
           job_id : String  //Job que identifica esta ejecución
         }
     ``` 
@@ -34,7 +34,8 @@
   * **Code:** 422 UNPROCESSABLE ENTRY <br />
     **Content:** `{ error : "Email Invalid" }` -->
 
-### **/ingestor/v1/new**
+
+## **/ingestor/v1/new**
  Agrega nuevos audios a una ejecución previa, para procesamiento y descarga de audios por parte del **Ingestor**.
 * **Method:**
   `PATCH`
@@ -51,11 +52,11 @@
 }
 ```
 * **Element Definition:** metadata: JSON String [Metadata JSON SCHEMA](VOC-Metadata.schema.json)
-  
 * **Success Response:**
   * **Code:** 200 <br />
     ```
        {
+          tenant_id: String
           job_id : String  //Job que identifica esta ejecución
         }
     ``` 
@@ -66,7 +67,32 @@
     **Content:** `{ error : "Email Invalid" }` -->
 
 
-### **/ingestor/v1/metadata**
+## **/ingestor/v1/job**
+ Obtiene un listado de listado de audios para su procesamiento desde el módulo INPUT del **Ingestor**.
+* **Method:**
+  `GET`
+* **Data Params Required:**
+  * tenant_id: String
+  * limit: Numeric //Número máximo de audios a obtener en esta iteración de consulta
+* **Success Response:**
+  * **Code:** 200 <br />
+    ```
+       {
+          audios : Array[]  //Listado de audios a procesar
+       }
+    ```
+* **Element Definition:** audios Array[]: 
+ ```
+{
+  tenant_id: String
+  job_id: String //Id de la ejecución a la cual pertenece este audio
+  source: String    //Ruta completa para la descarga del audio
+  duration: Numeric  //Duración del audio en segundos
+  file_id: String   //Nombre e identificador que deberá tener el archivo durante el proceso de ingestión (no incluye la extensión)
+}
+```
+
+## **/ingestor/v1/metadata**
  Extrae la metadata para un archivo determinado.
 * **Method:**
   `GET`
@@ -85,8 +111,9 @@
     **Content:** `{ error : "Log in" }`
   * **Code:** 422 UNPROCESSABLE ENTRY <br />
     **Content:** `{ error : "Email Invalid" }` -->
+
     
-### **/ingestor/v1/input/state**
+## **/ingestor/v1/input/state**
  Indica y registra TODOS los cambios de estado en el procesamiento de cada archivo por el microservicio INPUT
 * **Method:**
   `PATCH`
@@ -103,7 +130,8 @@
   * **Code:** 422 UNPROCESSABLE ENTRY <br />
     **Content:** `{ error : "Email Invalid" }` -->
 
-### **/ingestor/v1/converter/state**
+
+## **/ingestor/v1/converter/state**
  Indica y registra TODOS los cambios de estado en el procesamiento de cada archivo por el microservicio CONVERTER
 * **Method:**
   `PATCH`
@@ -121,7 +149,7 @@
     **Content:** `{ error : "Email Invalid" }` -->
 
     
-### **/ingestor/v1/zipper/state**
+## **/ingestor/v1/zipper/state**
  Indica y registra TODOS los cambios de estado en el procesamiento de cada archivo por el microservicio ZIPPER
 * **Method:**
   `PATCH`
@@ -139,7 +167,7 @@
     **Content:** `{ error : "Email Invalid" }` -->
 
     
-### **/ingestor/v1/uploader/state**
+## **/ingestor/v1/uploader/state**
  Indica y registra TODOS los cambios de estado en el procesamiento de cada archivo por el microservicio UPLOADER
 * **Method:**
   `PATCH`
