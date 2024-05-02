@@ -42,7 +42,7 @@
 
 
 ## **/ingestor/v1/job**
- Obtiene un listado de listado de audios para su procesamiento desde el módulo INPUT del **Ingestor**.
+ Obtiene un listado de nuevos audios para su procesamiento desde el módulo INPUT del **Ingestor**.
 * **Method:**
   `GET`
 * **Data Params Required:**
@@ -60,7 +60,7 @@
 
 
 ## **/ingestor/v1/job/stats**
- Extrae las estadísticas metadata para un archivo determinado.
+ Extrae las estadísticas de un JOB determinado.
 * **Method:**
   `GET`
 * **Data Params Required:**
