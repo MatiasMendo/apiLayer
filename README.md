@@ -57,6 +57,7 @@
       * source: String    //Ruta completa para la descarga del audio
       * duration: Numeric  //Duración del audio en segundos
       * file_id: String   //Nombre e identificador que deberá tener el archivo durante el proceso de ingestión (no incluye la extensión)
+      * type: String // "AUDIO" | "TEXT" (para canales digitales)
 
 
 ## **/ingestor/v1/job/stats**
