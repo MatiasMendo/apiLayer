@@ -24,7 +24,7 @@ class MongooDB {
             this.databaseURL = connectionString;
             this.initialized = true;
         } catch(error) {
-            logger.error("[MongoDB][error] => No se realizó la conexión a MongoDB: " + error);
+            logger.error("[APILAYER][MongooDB][error] No se realizó la conexión a MongoDB: " + error);
             throw Error(error);
         }
     }
@@ -42,16 +42,16 @@ exports.instance = function () {
 
 
 mongoose.connection.on('connected', () => {
-    logger.info("[MongoDB][connected] => Conexión establecida a MongoDB: '" + MongooDB.instance().databaseName + "'");       
+    logger.info("[APILAYER][MongooDB][connected] => Conexión establecida a MongoDB: '" + MongooDB.instance().databaseName + "'");       
     MongooDB.instance().client = true;
 })
 
 mongoose.connection.on('disconnected', () => {
-    logger.info("[MongoDB][disconnected] => Desconexión a MongoDB: '" + MongooDB.instance().databaseName + "'");
+    logger.info("[APILAYER][MongooDB][disconnected] => Desconexión a MongoDB: '" + MongooDB.instance().databaseName + "'");
     MongooDB.instance().client = false;
 })
 
 
 mongoose.connection.on('error', (e) => {
-    logger.info("[MongoDB][error] => Error en conexión a MongoDB: '" + e + "'");
+    logger.info("[APILAYER][MongooDB][error] => Error en conexión a MongoDB: '" + e + "'");
 })

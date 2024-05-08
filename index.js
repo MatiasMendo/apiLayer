@@ -1,49 +1,38 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+const express = require('express');
+const bodyParser = require('body-parser');
+const status = require('./ingestor_apilayer_stateupdate.js');
+const jobs = require('./ingestor_apilayer_jobs.js');
+const mongoo = require('./ingestor_apilayer_mongoo.js');
+const logger = require('./utils/Logger.js');
 
 
 
 var app = express();
 
 
+mongoo.instance().init().then(() => {
+	let server = app.listen(8081, function () {
+		let host = server.address().address;
+		let port = server.address().port;
 
-
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://rodrigotobar:QLUoe48d3viEOzZ7@cluster.9wvliio.mongodb.net/?retryWrites=true&w=majority&appName=Cluster";
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-	serverApi: {
-		version: ServerApiVersion.v1,
-		strict: true,
-		deprecationErrors: true,
-	}
+		logger.info("[APILAYER][main] API Layer listening at http://" + host + ":" + port);
+	})
+}).catch((e) => {
+	logger.error("[APILAYER][main] Error " + e.message)
 });
 
-async function run() {
-	try {
-		// Connect the client to the server	(optional starting in v4.7)
-		await client.connect();
-		// Send a ping to confirm a successful connection
-		await client.db("admin").command({ ping: 1 });
-		console.log("Pinged your deployment. You successfully connected to MongoDB!");
-	} finally {
-		// Ensures that the client will close when you finish/error
-		await client.close();
+
+
+app.use(bodyParser.json())
+//Maneja error de parsing de data
+app.use((err, req, res, next) => {
+	if (err) {
+		logger.debug('[APILAYER][main] Error parsing data from request ' + req.url)
+		res.status(400).send('error parsing data')
+	} else {
+		next()
 	}
-}
-run().catch(console.dir);
-
-
-var server = app.listen(8081, function () {
-	let host = server.address().address;
-	let port = server.address().port;
-
-	console.log("API Layer listening at http://%s:%s", host, port);
-}) 
-
-
-
-
+})
 
 
 //
@@ -51,42 +40,64 @@ var server = app.listen(8081, function () {
 //
 
 let baseroute = '/ingestor/v1'
+
+//Endpoints relacionados a crear nuevas ejecuciones o Jobs
 app.post(baseroute + '/new', bodyParser.json(), function (req, res) {
-	console.log('API new')
+	logger.debug('[APILAYER][main] API new')
+	jobs.new_job(req.body, res)
+	
+});
+
+app.patch(baseroute + '/new', function (req, res) {
+	logger.debug('[APILAYER][main] API new - patch')
+	jobs.append_job(req.body, res)
+});
+
+app.get(baseroute + '/job', function (req, res) {
+	logger.debug('[APILAYER][main] API new - job')
+	res.send()
+});
+
+app.get(baseroute + '/job/stats', function (req, res) {
+	logger.debug('[APILAYER][main] API new - job/stats')
+	res.send()
+});
+
+
+//API para la extracción de metadata desde archivo
+app.get(baseroute + '/metadata', function (req, res) {
+	logger.debug('[APILAYER][main] API new - metadata')
 	res.send()
 });
 
 
 
+//import * as status from './ingestor_apilayer_statusupdate.mjs';
 
-
-var status = require('./ingestor_apilayer_statusupdate.js')
 //
 // procesa todos los endpoint de cambio de estado
 //
 
-app.patch(baseroute + '/input/state', bodyParser.json(), function (req, res) {
-	console.log('API input')
+app.patch(baseroute + '/input/state', function (req, res) {
+	logger.debug('[APILAYER][main] API input')
 
 	status.update('input', req.body, res)
 });
 
-app.patch(baseroute + '/converter/state', bodyParser.json(), function (req, res) {
-	console.log('API converter')
+app.patch(baseroute + '/converter/state', function (req, res) {
+	logger.debug('[APILAYER][main] API converter')
 
 	status.update('converter', req.body, res)
 });
 
-app.patch(baseroute + '/zipper/state', bodyParser.json(), function (req, res) {
-	console.log('API zipper')
+app.patch(baseroute + '/zipper/state', function (req, res) {
+	logger.debug('[APILAYER][main] API zipper')
 
-	status.update('zippper', req.body, res)
+	status.update('zipper', req.body, res)
 });
 
-
-
-app.patch(baseroute + '/uploader/state', bodyParser.json(), function (req, res) {
-	console.log('API uploader')
+app.patch(baseroute + '/uploader/state', function (req, res) {
+	logger.debug('[APILAYER][main] API uploader')
 
 	status.update('uploader', req.body, res)
 });

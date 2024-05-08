@@ -22,7 +22,7 @@ class Mongoo {
             this.connection = await mongoodb.instance().init(this.databaseURL, 'ingestorjob');
             this.initialized = true;
         } catch(error) {
-            logger.error("[Mongo][Error] => No se realizó la conexión a MongoDB: ingestorjob ");
+            logger.error("[APILAYER][Mongoo][Error] No se realizó la conexión a MongoDB: ingestorjob ");
             throw Error (error);
         }
     }
