@@ -1,7 +1,7 @@
 const log4js = require("log4js");
 const path = require('path');
 
-var loggerName = "dataParticipant";
+var loggerName = "ingestor_apilayer";
 
 log4js.configure( {
 	appenders : {
@@ -47,7 +47,7 @@ log4js.configure( {
 
 const logger = log4js.getLogger( loggerName );
 
-logger.level = "info";
+logger.level = "debug";
 
 logger.addContext("custom", '');
 

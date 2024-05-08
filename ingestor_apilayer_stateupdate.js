@@ -1,4 +1,7 @@
 
+const logger = require('./utils/Logger.js');
+const mongoo = require('./ingestor_apilayer_mongoo.js');
+
 
 exports.update = function (module, body, res) {
 
@@ -6,7 +9,7 @@ exports.update = function (module, body, res) {
 		(typeof body.file_id != "string") &&
 		(typeof body.state != "string")
 	) {
-		res.sendStatus(400)
+		res.status(400).send();
 		return
 	}
 
@@ -14,12 +17,41 @@ exports.update = function (module, body, res) {
 	//chequea los stados válidos
 	if ((body.state !== "STARTING") &&
 		(body.state !== "FINISHED") &&
+		(body.state !== "BAD_FILE") &&
 		(body.state !== "ERROR")) {
-		res.sendStatus(400)
+		res.status(400).send()
 		return
 	}
 
+	const RecordingData = mongoo.instance().Models(body.tenant_id).RecordingDataSchema;
 
-    console.log("actualizando " + module + " a " + body.state)
-    res.send()
+	let update = {};
+	switch (module) {
+		case 'input':
+		case 'converter':
+		case 'zipper':
+		case 'uploader':
+			update['stage.'+ module] = body.state;
+			break;
+	}
+
+	if (0 != update.size ) {
+		let filter = {
+			"file_id": body.file_id
+		};
+
+		RecordingData.updateOne(filter, update).exec().then((result) => {
+			if (0 == result.matchedCount) {
+				logger.info("[APILAYER][status update] file_id " + body.file_id + " not found ");
+			}
+			else {
+				logger.info("[APILAYER][status update] file_id " + body.file_id + ", updated stage " + module + " to " + body.state);
+			}
+			res.send();
+		})
+	}
+	else {
+		logger.error("[APILAYER][status update] Error, modulo no existe " + module)
+		res.status(400).send()
+	}
 }
