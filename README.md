@@ -87,6 +87,7 @@
 * **Success Response:**
   * **Code:** 200 <br />
     * metadata : String  //String con el contenido de la metada del audio consultado
+    * file_id: String   //Nombre e identificador que deberá tener el archivo durante el proceso de ingestión (no incluye la extensión)
 
     
 ## **/ingestor/v1/input/state**
