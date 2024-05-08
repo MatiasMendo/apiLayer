@@ -1,0 +1,11 @@
+{
+  "name": "ingestor_apilayer",
+  "version": "1.0.0",
+  "description": "API Layer Module to Ingestor component",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rodrigo Tobar",
+  "license": "ISC"
+}
