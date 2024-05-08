@@ -1,0 +1,167 @@
+{
+	"info": {
+		"_postman_id": "1bf837f7-c8f3-487f-81cf-65612e536356",
+		"name": "API Layer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "27583941-1bf837f7-c8f3-487f-81cf-65612e536356"
+	},
+	"item": [
+		{
+			"name": "v1",
+			"item": [
+				{
+					"name": "new",
+					"id": "a2bf10f1-db51-4e12-b5a0-b7ced4254a9d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"audios\": [\r\n\t    {\r\n\t\t    \"source\": \"/mnt/test/source/01_123456789.wav\",\r\n\t\t    \"duration\": 60,\r\n\t\t    \"metadata\": \"{\\\"my_metadata_01\\\"}\"\r\n\t},\r\n\t{\r\n\t\t\"source\": \"/mnt/test/source/02_123456789.wav\",\r\n\t\t\"duration\": 98,\r\n\t\t\"metadata\": \"{\\\"my_metadata_02\\\"}\"\r\n\t}\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/ingestor/v1/new",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"ingestor",
+								"v1",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "new",
+					"id": "043b6fd4-0e2b-444b-917d-e9a8f87ce600",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"job_id\": {{job_id}},\r\n    \"audios\": [\r\n\t    {\r\n\t\t    \"source\": \"/mnt/test/source/01_123456789.wav\",\r\n\t\t    \"duration\": 60,\r\n\t\t    \"metadata\": \"{\\\"my_metadata_01\\\"}\"\r\n\t},\r\n\t{\r\n\t\t\"source\": \"/mnt/test/source/02_123456789.wav\",\r\n\t\t\"duration\": 98,\r\n\t\t\"metadata\": \"{\\\"my_metadata_02\\\"}\"\r\n\t}\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/ingestor/v1/new",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"ingestor",
+								"v1",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "input / state",
+					"id": "2e0c8ebe-811d-4ec6-afe2-12646b763735",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"file_id\": {{file_id}},\r\n    \"state\" : {{state}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/ingestor/v1/input/state",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"ingestor",
+								"v1",
+								"input",
+								"state"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "f9aea322-dc75-45dd-a2a9-01fdba6db853"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "dff19988-dd69-4753-a869-2218e14f32b5",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "70cd9a49-7277-48fc-b4a5-597578c36410",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "e0c2d8af-c426-42ce-af20-dfbad08f1785",
+			"key": "host",
+			"value": "127.0.0.1:8081",
+			"type": "string"
+		},
+		{
+			"id": "f43a8ad9-c0bd-4c80-b2c4-6f0a28e2dbae",
+			"key": "tenant_id",
+			"value": "\"my_tenant_id\"",
+			"type": "string"
+		},
+		{
+			"id": "839701ec-c4d2-45b0-a3d2-ca13b159c10f",
+			"key": "job_id",
+			"value": "\"28aacf24-ad8a-4635-b831-fbe43ccc08c9\"",
+			"type": "string"
+		},
+		{
+			"id": "a4fdf738-d4fc-4591-9e94-7ded77dd02d0",
+			"key": "file_id",
+			"value": "\"027bc359-b316-4218-9a53-4f41c1102746\"",
+			"type": "string"
+		},
+		{
+			"id": "9d19cac8-7122-48c7-be46-bac90a090387",
+			"key": "state",
+			"value": "\"ERROR\"",
+			"type": "string"
+		}
+	]
+}
