@@ -132,6 +132,8 @@
 * **Data Params Required:**
   * tenant_id: String
   * job_id: String
+  * job_time: Date //Inicio del job
+  * last_time: Date //último registro procesado
 * **Success Response:**
   * **Code:** 200 <br />
     * duration: Numeric  //Segundos de audios que han sido subidos correctamente por este job al momento de la consulta
