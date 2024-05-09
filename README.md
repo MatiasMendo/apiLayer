@@ -20,7 +20,7 @@
   * **Code:** 200 <br />
     * tenant_id: String
     * job_id : String  //Job que identifica esta ejecución
-    * amount: Numeric //Cantidad de audios insertados
+    * total: Numeric //Cantidad de audios insertados
 
 
 ## **/ingestor/v1/new**
@@ -40,7 +40,7 @@
   * **Code:** 200 <br />
     * tenant_id: String
     * job_id : String  //Job que identifica esta ejecución
-    * amount: Numeric //Cantidad de audios insertado
+    * total: Numeric //Cantidad de audios insertado
 
 
 ## **/ingestor/v1/job**
