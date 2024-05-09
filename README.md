@@ -52,6 +52,7 @@
   * limit: Numeric //Número máximo de audios a obtener en esta iteración de consulta
 * **Success Response:**
   * **Code:** 200 <br />
+    * total: Numeric //Cantidad de audios retornados
     * audios : Array[]  //Listado de audios a procesar
     * **Element Definition:** audios Array[]: 
       * tenant_id: String
