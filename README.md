@@ -138,6 +138,6 @@
     * files:
       * total: Numeric // Número de archivos incluidos en este job
       * processing: Numeric //Número de archivos que están en proceso
-      * done: Numeric //Número de archivos ya procesados correctamente
+      * finished: Numeric //Número de archivos ya procesados correctamente
       * error: Numeric    //Número de archivos ya procesados pero con error   
 
