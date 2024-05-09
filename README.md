@@ -63,23 +63,6 @@
       * type: String // "AUDIO" | "TEXT" (para canales digitales)
 
 
-## **/ingestor/v1/job/stats**
- Extrae las estadísticas de un JOB determinado.
-* **Method:**
-  `GET`
-* **Data Params Required:**
-  * tenant_id: String
-  * job_id: String
-* **Success Response:**
-  * **Code:** 200 <br />
-    * duration: Numeric  //Segundos de audios que han sido subidos correctamente por este job al momento de la consulta
-    * files:
-      * total: Numeric // Número de archivos incluidos en este job
-      * processing: Numeric //Número de archivos que están en proceso
-      * done: Numeric //Número de archivos ya procesados correctamente
-      * error: Numeric    //Número de archivos ya procesados pero con error   
-
-
 ## **/ingestor/v1/metadata**
  Extrae la metadata para un archivo determinado.
 * **Method:**
@@ -140,4 +123,21 @@
   * state: "STARTING | FINISHED | ERROR | BAD_FILE"
 * **Success Response:**
   * **Code:** 200 <br />
+
+
+## **/ingestor/v1/stats/job**
+ Extrae las estadísticas de un JOB determinado.
+* **Method:**
+  `GET`
+* **Data Params Required:**
+  * tenant_id: String
+  * job_id: String
+* **Success Response:**
+  * **Code:** 200 <br />
+    * duration: Numeric  //Segundos de audios que han sido subidos correctamente por este job al momento de la consulta
+    * files:
+      * total: Numeric // Número de archivos incluidos en este job
+      * processing: Numeric //Número de archivos que están en proceso
+      * done: Numeric //Número de archivos ya procesados correctamente
+      * error: Numeric    //Número de archivos ya procesados pero con error   
 
