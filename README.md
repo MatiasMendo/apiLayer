@@ -20,6 +20,7 @@
   * **Code:** 200 <br />
     * tenant_id: String
     * job_id : String  //Job que identifica esta ejecución
+    * total: Numeric //Cantidad de audios insertados
 
 
 ## **/ingestor/v1/new**
@@ -39,6 +40,7 @@
   * **Code:** 200 <br />
     * tenant_id: String
     * job_id : String  //Job que identifica esta ejecución
+    * total: Numeric //Cantidad de audios insertado
 
 
 ## **/ingestor/v1/job**
@@ -50,6 +52,7 @@
   * limit: Numeric //Número máximo de audios a obtener en esta iteración de consulta
 * **Success Response:**
   * **Code:** 200 <br />
+    * total: Numeric //Cantidad de audios retornados
     * audios : Array[]  //Listado de audios a procesar
     * **Element Definition:** audios Array[]: 
       * tenant_id: String
@@ -58,23 +61,6 @@
       * duration: Numeric  //Duración del audio en segundos
       * file_id: String   //Nombre e identificador que deberá tener el archivo durante el proceso de ingestión (no incluye la extensión)
       * type: String // "AUDIO" | "TEXT" (para canales digitales)
-
-
-## **/ingestor/v1/job/stats**
- Extrae las estadísticas de un JOB determinado.
-* **Method:**
-  `GET`
-* **Data Params Required:**
-  * tenant_id: String
-  * job_id: String
-* **Success Response:**
-  * **Code:** 200 <br />
-    * duration: Numeric  //Segundos de audios que han sido subidos correctamente por este job al momento de la consulta
-    * files:
-      * total: Numeric // Número de archivos incluidos en este job
-      * processing: Numeric //Número de archivos que están en proceso
-      * done: Numeric //Número de archivos ya procesados correctamente
-      * error: Numeric    //Número de archivos ya procesados pero con error   
 
 
 ## **/ingestor/v1/metadata**
@@ -87,6 +73,7 @@
 * **Success Response:**
   * **Code:** 200 <br />
     * metadata : String  //String con el contenido de la metada del audio consultado
+    * file_id: String   //Nombre e identificador que deberá tener el archivo durante el proceso de ingestión (no incluye la extensión)
 
     
 ## **/ingestor/v1/input/state**
@@ -136,4 +123,23 @@
   * state: "STARTING | FINISHED | ERROR | BAD_FILE"
 * **Success Response:**
   * **Code:** 200 <br />
+
+
+## **/ingestor/v1/stats/job**
+ Extrae las estadísticas de un JOB determinado.
+* **Method:**
+  `GET`
+* **Data Params Required:**
+  * tenant_id: String
+  * job_id: String
+* **Success Response:**
+  * **Code:** 200 <br />
+    * duration: Numeric  //Segundos de audios que han sido subidos correctamente por este job al momento de la consulta
+    * job_time: Date //Inicio del job
+    * last_time: Date //último registro procesado
+    * files:
+      * total: Numeric // Número de archivos incluidos en este job
+      * processing: Numeric //Número de archivos que están en proceso
+      * finished: Numeric //Número de archivos ya procesados correctamente
+      * error: Numeric    //Número de archivos ya procesados pero con error   
 
