@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const status = require('./ingestor_apilayer_stateupdate.js');
 const metadata = require('./ingestor_apilayer_metadata.js');
 const jobs = require('./ingestor_apilayer_jobs.js');
+const statsjob = require('./ingestor_apilayer_statsjob.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
 const logger = require('./utils/Logger.js');
 
@@ -59,9 +60,10 @@ app.get(baseroute + '/job', function (req, res) {
 	jobs.get_job(req.body, res);
 });
 
+//API para estadísticas
 app.get(baseroute + '/stats/job', function (req, res) {
 	logger.debug('[APILAYER][main] API get - job/stats')
-	res.send()
+	statsjob.get_statsjob(req.body, res);
 });
 
 

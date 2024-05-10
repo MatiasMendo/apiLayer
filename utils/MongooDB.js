@@ -14,7 +14,6 @@ class MongooDB {
         this.databaseName = process.env.MONGODB;
         this.initialized = false;        
     }
-    get connected() {return this.client?true:false}
 
     async init(connectionString, dbName) {
           
@@ -25,11 +24,11 @@ class MongooDB {
             this.initialized = true;
         } catch(error) {
             logger.error("[APILAYER][MongooDB][error] No se realizó la conexión a MongoDB: " + error);
-            throw Error(error);
+            if (!this.initialized) { //solo lanzará excepción si no se conecta la primera vez
+                throw Error(error);
+            }
         }
     }
-
-
 
     isInitialized() {return this.initialized}
  

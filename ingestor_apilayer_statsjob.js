@@ -95,3 +95,40 @@ exports.updatestate = async function (otenant_id, ojob_id, omodule, ostate, odur
     });
 }
 
+
+
+//maneja respuestas a la API
+exports.get_statsjob = async function (body, res) {
+
+    if ((typeof body.tenant_id != "string") &&
+        (typeof body.job_id != "string")
+    ) {
+        res.status(400).send();
+        return
+    }
+
+    const StatsjobData = mongoo.instance().Models(body.tenant_id).StatsjobDataSchema;
+    StatsjobData.findOne({ "job_id": body.job_id }).exec().then((doc) => {
+        if (null == doc) {
+            logger.info("[APILAYER][getstatsjob] Error in parameter job_id " + body.job_id);
+            res.status(400).send();
+            return
+        }
+
+        res.send({
+            "duration": doc.seconds.finished,
+            "job_time": doc.job_time,
+            "last_time": doc.last_time,
+            "files": {
+                "total": doc.files.total,
+                "processing": doc.files.retrieved - (doc.files.finished + doc.files.error),
+                "finished": doc.files.finished,
+                "error": doc.files.error
+            }
+        });
+    });
+
+
+
+}
+
