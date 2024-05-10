@@ -60,6 +60,14 @@ var RecordingDataSchema = new Schema({
     status: {
         type: Schema.Types.String,
         required: true
+    },
+    input_time: {
+        type: Schema.Types.Date,
+        required: false
+    },
+    finished_time: {
+        type: Schema.Types.Date,
+        required: false
     }
 })
 

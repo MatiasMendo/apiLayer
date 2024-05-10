@@ -41,6 +41,11 @@ exports.instance = function () {
 }
 
 
+mongoose.connection.on('connecting', () => {
+    logger.info("[APILAYER][MongooDB][connecting] => Estableciendo conexión a MongoDB: '" + MongooDB.instance().databaseName + "'");
+    MongooDB.instance().client = true;
+})
+
 mongoose.connection.on('connected', () => {
     logger.info("[APILAYER][MongooDB][connected] => Conexión establecida a MongoDB: '" + MongooDB.instance().databaseName + "'");       
     MongooDB.instance().client = true;

@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const status = require('./ingestor_apilayer_stateupdate.js');
+const metadata = require('./ingestor_apilayer_metadata.js');
 const jobs = require('./ingestor_apilayer_jobs.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
 const logger = require('./utils/Logger.js');
@@ -50,24 +51,24 @@ app.post(baseroute + '/new', bodyParser.json(), function (req, res) {
 
 app.patch(baseroute + '/new', function (req, res) {
 	logger.debug('[APILAYER][main] API new - patch')
-	jobs.append_job(req.body, res)
+	jobs.append_job(req.body, res);
 });
 
 app.get(baseroute + '/job', function (req, res) {
-	logger.debug('[APILAYER][main] API new - job')
-	res.send()
+	logger.debug('[APILAYER][main] API get - job')
+	jobs.get_job(req.body, res);
 });
 
-app.get(baseroute + '/job/stats', function (req, res) {
-	logger.debug('[APILAYER][main] API new - job/stats')
+app.get(baseroute + '/stats/job', function (req, res) {
+	logger.debug('[APILAYER][main] API get - job/stats')
 	res.send()
 });
 
 
 //API para la extracción de metadata desde archivo
 app.get(baseroute + '/metadata', function (req, res) {
-	logger.debug('[APILAYER][main] API new - metadata')
-	res.send()
+	logger.debug('[APILAYER][main] API new - metadata');
+	metadata.get(req.body, res);
 });
 
 

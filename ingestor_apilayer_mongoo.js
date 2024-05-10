@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var mongoodb = require('./utils/MongooDB.js');
 var RecordingDataSchema = require('./models/RecordingData.js');
+var StatsjobDataSchema = require('./models/StatsjobData.js');
 const logger = require ("./utils/Logger.js");
 
 class Mongoo {
@@ -35,7 +36,8 @@ class Mongoo {
         try {
             if (!(tenant in this.mytenants)) {
                 this.mytenants[tenant] = {
-                    RecordingDataSchema: mongoose.model(tenant, RecordingDataSchema)
+                    RecordingDataSchema: mongoose.model(tenant + '_data', RecordingDataSchema),
+                    StatsjobDataSchema: mongoose.model(tenant + '_stats', StatsjobDataSchema)
                 }
             }
 

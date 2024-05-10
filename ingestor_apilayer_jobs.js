@@ -1,5 +1,6 @@
 const logger = require('./utils/Logger.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
+const statsjob = require('./ingestor_apilayer_statsjob.js');
 const { v4: uuidv4 } = require('uuid');
 
 
@@ -88,6 +89,7 @@ async function insert_job(body, res, newjob) {
 
     let mytenant_id = mydocuments[0].tenant_id;
     let myjob_id = mydocuments[0].job_id;
+    let myjob_time = mydocuments[0].job_time;
 
     let RecordingData = mongoo.instance().Models(mytenant_id).RecordingDataSchema;
     RecordingData.insertMany(mydocuments, { lean: false, throwOnValidationError: true })
@@ -95,8 +97,18 @@ async function insert_job(body, res, newjob) {
             logger.debug("[APILAYER][new] Inserted " + docs.length + "documents to DB");
             res.send({
                 'tenant_id': mytenant_id,
-                'job_id': myjob_id
+                'job_id': myjob_id,
+                'total': docs.length
             });
+
+            //inserta estadísticas
+            if (newjob) {
+                statsjob.initjob(mytenant_id, myjob_id, myjob_time, docs.length);
+            }
+            else {
+                statsjob.appendjob(mytenant_id, myjob_id, docs.length);
+            }
+ 
         }).catch((e) => {
             logger.error('[APILAYER][new] catching db InsertMany error ' + e);
             res.status(500).send();
@@ -112,6 +124,54 @@ exports.new_job = async function (body, res) {
 
 exports.append_job = async function (body, res) {
     insert_job(body, res, false);
+}
+
+exports.get_job = async function (body, res) {
+    if ((undefined == body.tenant_id) || (typeof body.tenant_id != "string")) {
+        logger.info("[APILAYER][getjob] Error in parameter tenant_id");
+        res.status(400).send();
+        return;
+    }
+    
+    if ((undefined == body.limit) || (typeof body.limit != "number")) {
+        logger.info("[APILAYER][getjob] Error in parameter limit");
+        res.status(400).send();
+        return;
+    }
+
+    let RecordingData = mongoo.instance().Models(body.tenant_id).RecordingDataSchema;
+    RecordingData.find({ status: 'IDLE' }).limit(body.limit).exec().then((query) => {
+
+        let documents = [];
+        let idx = 0;
+        if (null != query) {
+            query.forEach((doc) => {
+                documents[idx] = {
+                    "tenant_id": doc.tenant_id,
+                    "job_id": doc.job_id,
+                    "source": doc.source,
+                    "duration": doc.duration,
+                    "file_id": doc.file_id,
+                    "type": doc.type
+                };
+                idx++;
+
+                //update el documento a processing
+                doc.status = "PROCESSING";
+                doc.input_time = new Date();
+                doc.save();
+
+                statsjob.retrieved(doc.tenant_id, doc.job_id);
+            })
+        } 
+        // Envia los audios
+        res.send({
+            "total": idx,
+            "audios": documents
+        })
+
+        
+    })
 }
 
      
