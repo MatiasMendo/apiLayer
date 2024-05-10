@@ -74,6 +74,70 @@
 					"response": []
 				},
 				{
+					"name": "job",
+					"id": "a2888673-49a8-481b-8e14-08f610d3c5d3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"limit\": 3\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/ingestor/v1/job",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"ingestor",
+								"v1",
+								"job"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "metadata",
+					"id": "33daa40a-9024-462c-b40f-327531f005f3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"file_id\": {{file_id}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/ingestor/v1/metadata",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"ingestor",
+								"v1",
+								"metadata"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "input / state",
 					"id": "2e0c8ebe-811d-4ec6-afe2-12646b763735",
 					"protocolProfileBehavior": {
@@ -105,6 +169,138 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "converter / state",
+					"id": "3f672850-a212-4e2e-9ddd-4c7a8fe7c84e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"file_id\": {{file_id}},\r\n    \"state\" : {{state}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/ingestor/v1/converter/state",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"ingestor",
+								"v1",
+								"converter",
+								"state"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "zipper / state",
+					"id": "601b3b72-558b-4e85-84bc-2be13ecbd65f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"file_id\": {{file_id}},\r\n    \"state\" : {{state}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/ingestor/v1/zipper/state",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"ingestor",
+								"v1",
+								"zipper",
+								"state"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "uploader / state",
+					"id": "6cfd8e42-bdb6-406e-b7ee-dfdb70b2db6c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"file_id\": {{file_id}},\r\n    \"state\" : {{state}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/ingestor/v1/uploader/state",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"ingestor",
+								"v1",
+								"uploader",
+								"state"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "stats / job",
+					"id": "49cf12a7-42c2-469c-9ad8-19d6b549fe11",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"job_id\": {{job_id}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/ingestor/v1/stats/job",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"ingestor",
+								"v1",
+								"stats",
+								"job"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"id": "f9aea322-dc75-45dd-a2a9-01fdba6db853"
@@ -114,7 +310,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "dff19988-dd69-4753-a869-2218e14f32b5",
+				"id": "4fccb277-e4b0-4d69-a528-d155cb558d4b",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -124,7 +320,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "70cd9a49-7277-48fc-b4a5-597578c36410",
+				"id": "88e7635f-7b3c-4fc9-9224-3edf4f64a7ea",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -134,31 +330,31 @@
 	],
 	"variable": [
 		{
-			"id": "e0c2d8af-c426-42ce-af20-dfbad08f1785",
+			"id": "6003d4af-feec-4b57-bb51-9c92e61e2800",
 			"key": "host",
 			"value": "127.0.0.1:8081",
 			"type": "string"
 		},
 		{
-			"id": "f43a8ad9-c0bd-4c80-b2c4-6f0a28e2dbae",
+			"id": "6ab4258f-5f21-4680-baa7-a996ab6a5e8e",
 			"key": "tenant_id",
 			"value": "\"my_tenant_id\"",
 			"type": "string"
 		},
 		{
-			"id": "839701ec-c4d2-45b0-a3d2-ca13b159c10f",
+			"id": "b0ef8ac3-21df-4b7a-af2d-4eb01f98b005",
 			"key": "job_id",
 			"value": "\"28aacf24-ad8a-4635-b831-fbe43ccc08c9\"",
 			"type": "string"
 		},
 		{
-			"id": "a4fdf738-d4fc-4591-9e94-7ded77dd02d0",
+			"id": "dde35e0e-b240-4e9b-8346-a8bafbf222ab",
 			"key": "file_id",
 			"value": "\"027bc359-b316-4218-9a53-4f41c1102746\"",
 			"type": "string"
 		},
 		{
-			"id": "9d19cac8-7122-48c7-be46-bac90a090387",
+			"id": "40898d4b-ea3c-4a81-a1e0-d5019ef96b44",
 			"key": "state",
 			"value": "\"ERROR\"",
 			"type": "string"
