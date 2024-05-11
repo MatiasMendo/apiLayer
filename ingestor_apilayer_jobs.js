@@ -127,6 +127,7 @@ exports.append_job = async function (body, res) {
 }
 
 exports.get_job = async function (body, res) {
+
     if ((undefined == body.tenant_id) || (typeof body.tenant_id != "string")) {
         logger.info("[APILAYER][getjob] Error in parameter tenant_id");
         res.status(400).send();

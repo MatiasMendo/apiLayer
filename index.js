@@ -57,7 +57,12 @@ app.patch(baseroute + '/new', function (req, res) {
 
 app.get(baseroute + '/job', function (req, res) {
 	logger.debug('[APILAYER][main] API get - job')
-	jobs.get_job(req.body, res);
+	if (Object.keys(req.query.body).length > 0) {//axios
+		jobs.get_job(JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		jobs.get_job(req.body, res);
+	}
 });
 
 //API para estadísticas
@@ -75,7 +80,6 @@ app.get(baseroute + '/metadata', function (req, res) {
 
 
 
-//import * as status from './ingestor_apilayer_statusupdate.mjs';
 
 //
 // procesa todos los endpoint de cambio de estado
