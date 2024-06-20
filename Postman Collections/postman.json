@@ -1,0 +1,262 @@
+{
+	"info": {
+		"_postman_id": "370c9ed2-bb06-4277-8179-4636ab78f31a",
+		"name": "API Layer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "v1",
+			"item": [
+				{
+					"name": "new",
+					"id": "c03f7463-3875-43ef-953b-3e37ea4a1fe2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"audios\": [\r\n\t    {\r\n\t\t    \"source\": \"/mnt/test/source/01_123456789.wav\",\r\n\t\t    \"duration\": 60,\r\n\t\t    \"metadata\": \"{\\\"my_metadata_01\\\"}\" \r\n\t},\r\n\t{\r\n\t\t\"source\": \"/mnt/test/source/02_123456789.wav\",\r\n\t\t\"duration\": 98,\r\n\t\t\"metadata\": \"{\\\"my_metadata_02\\\"}\"\r\n\t}\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/new"
+					},
+					"response": []
+				},
+				{
+					"name": "new",
+					"id": "1de7ed5c-5bc3-4ca3-b1a1-8cf9be939e91",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"job_id\": {{job_id}},\r\n    \"audios\": [\r\n\t    {\r\n\t\t    \"source\": \"/mnt/test/source/01_123456789.wav\",\r\n\t\t    \"duration\": 60,\r\n\t\t    \"metadata\": \"{\\\"my_metadata_01\\\"}\"\r\n\t},\r\n\t{\r\n\t\t\"source\": \"/mnt/test/source/02_123456789.wav\",\r\n\t\t\"duration\": 98,\r\n\t\t\"metadata\": \"{\\\"my_metadata_02\\\"}\"\r\n\t}\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/new"
+					},
+					"response": []
+				},
+				{
+					"name": "job",
+					"id": "d89e4fca-a136-416b-8c00-2b72a5e2225b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"limit\": 3\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/job"
+					},
+					"response": []
+				},
+				{
+					"name": "metadata",
+					"id": "60f3710e-5078-45a8-97ae-f4d308a9815c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"file_id\": {{file_id}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/metadata"
+					},
+					"response": []
+				},
+				{
+					"name": "input / state",
+					"id": "708cf3e8-ba23-4398-bbd7-6c487884f2d4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"file_id\": {{file_id}},\r\n    \"state\" : {{state}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/input/state"
+					},
+					"response": []
+				},
+				{
+					"name": "converter / state",
+					"id": "5ab18858-dcb8-453f-86e4-4e7a52efb20e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"file_id\": {{file_id}},\r\n    \"state\" : {{state}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/converter/state"
+					},
+					"response": []
+				},
+				{
+					"name": "zipper / state",
+					"id": "e09f5a3a-ff81-4278-81af-e1e506f49ddf",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"file_id\": {{file_id}},\r\n    \"state\" : {{state}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/zipper/state"
+					},
+					"response": []
+				},
+				{
+					"name": "uploader / state",
+					"id": "f0ffd948-b1fa-4d33-b12f-eed3a6f0041b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"file_id\": {{file_id}},\r\n    \"state\" : {{state}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/uploader/state"
+					},
+					"response": []
+				},
+				{
+					"name": "stats / job",
+					"id": "00a6b1fd-dbfd-4540-8d05-1ffffcc38967",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"job_id\": {{job_id}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/stats/job"
+					},
+					"response": []
+				}
+			],
+			"id": "ff716667-cc16-4864-b126-c6aac3afada3"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "99ffc99b-0d30-433f-af44-85944edd20b6",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "76f501d8-daa8-4011-bb89-fbe6120a705b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "127.0.0.1:8081",
+			"type": "string"
+		},
+		{
+			"key": "tenant_id",
+			"value": "\"my_tenant_id\"",
+			"type": "string"
+		},
+		{
+			"key": "job_id",
+			"value": "\"28aacf24-ad8a-4635-b831-fbe43ccc08c9\"",
+			"type": "string"
+		},
+		{
+			"key": "file_id",
+			"value": "\"027bc359-b316-4218-9a53-4f41c1102746\"",
+			"type": "string"
+		},
+		{
+			"key": "state",
+			"value": "\"ERROR\"",
+			"type": "string"
+		}
+	]
+}
