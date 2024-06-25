@@ -1,5 +1,5 @@
 # API REST LAYER Module
 
-Documetnación de API en clickup
+Para revisar Documentación de API, remitirse a clickup
 
 
