@@ -41,21 +41,21 @@ exports.instance = function () {
 
 
 mongoose.connection.on('connecting', () => {
-    logger.info("[APILAYER][MongooDB][connecting] => Estableciendo conexión a MongoDB: '" + MongooDB.instance().databaseName + "'");
+    logger.info("[APILAYER][MongooDB][connecting] => Estableciendo conexión a MongoDB DB: '" + MongooDB.instance().databaseName + "'");
     MongooDB.instance().client = true;
 })
 
 mongoose.connection.on('connected', () => {
-    logger.info("[APILAYER][MongooDB][connected] => Conexión establecida a MongoDB: '" + MongooDB.instance().databaseName + "'");       
+    logger.info("[APILAYER][MongooDB][connected] => Conexión establecida a MongoDB DB: '" + MongooDB.instance().databaseName + "'");       
     MongooDB.instance().client = true;
 })
 
 mongoose.connection.on('disconnected', () => {
-    logger.info("[APILAYER][MongooDB][disconnected] => Desconexión a MongoDB: '" + MongooDB.instance().databaseName + "'");
+    logger.info("[APILAYER][MongooDB][disconnected] => Desconexión a MongoDB DB: '" + MongooDB.instance().databaseName + "'");
     MongooDB.instance().client = false;
 })
 
 
 mongoose.connection.on('error', (e) => {
-    logger.info("[APILAYER][MongooDB][error] => Error en conexión a MongoDB: '" + e + "'");
+    logger.info("[APILAYER][MongooDB][error] => Error en conexión a MongoDB DB: '" + e + "'");
 })

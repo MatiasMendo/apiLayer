@@ -4,6 +4,7 @@ const status = require('./ingestor_apilayer_stateupdate.js');
 const metadata = require('./ingestor_apilayer_metadata.js');
 const jobs = require('./ingestor_apilayer_jobs.js');
 const statsjob = require('./ingestor_apilayer_statsjob.js');
+const config = require('./ingestor_apilayer_config.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
 const logger = require('./utils/Logger.js');
 
@@ -65,20 +66,24 @@ app.get(baseroute + '/job', function (req, res) {
 	}
 });
 
-//API para estadísticas
+//API para estadï¿½sticas
 app.get(baseroute + '/stats/job', function (req, res) {
 	logger.debug('[APILAYER][main] API get - job/stats')
 	statsjob.get_statsjob(req.body, res);
 });
 
 
-//API para la extracción de metadata desde archivo
+//API para la extracciï¿½n de metadata desde archivo
 app.get(baseroute + '/metadata', function (req, res) {
 	logger.debug('[APILAYER][main] API new - metadata');
 	metadata.get(req.body, res);
 });
 
-
+//API para la extracciÃ³n de las configuraciones
+app.get(baseroute + '/configuration', function (req, res) {
+	logger.debug('[APILAYER][main] API configuration');
+	config.get(req.body, res);
+});
 
 
 //
