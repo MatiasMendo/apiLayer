@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "370c9ed2-bb06-4277-8179-4636ab78f31a",
+		"_postman_id": "eb14770a-c040-4759-87f9-4cb1952f50da",
 		"name": "API Layer",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -10,7 +10,7 @@
 			"item": [
 				{
 					"name": "new",
-					"id": "c03f7463-3875-43ef-953b-3e37ea4a1fe2",
+					"id": "604e2719-37a7-4923-91eb-61a9b6c50b36",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -32,7 +32,7 @@
 				},
 				{
 					"name": "new",
-					"id": "1de7ed5c-5bc3-4ca3-b1a1-8cf9be939e91",
+					"id": "f87c3311-c030-4b46-9e13-98fd565e38d8",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -54,7 +54,7 @@
 				},
 				{
 					"name": "job",
-					"id": "d89e4fca-a136-416b-8c00-2b72a5e2225b",
+					"id": "cd9eb33f-f535-4acb-a0ef-812195f065af",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -76,7 +76,7 @@
 				},
 				{
 					"name": "metadata",
-					"id": "60f3710e-5078-45a8-97ae-f4d308a9815c",
+					"id": "931861bf-a5bd-40da-ad3e-cba451938df9",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -97,8 +97,30 @@
 					"response": []
 				},
 				{
+					"name": "configuration",
+					"id": "b44360cf-ad96-47cf-be4e-80751079f71c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/configuration"
+					},
+					"response": []
+				},
+				{
 					"name": "input / state",
-					"id": "708cf3e8-ba23-4398-bbd7-6c487884f2d4",
+					"id": "949af2fd-1e1d-4b0b-a7d2-493f1b35065d",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -120,7 +142,7 @@
 				},
 				{
 					"name": "converter / state",
-					"id": "5ab18858-dcb8-453f-86e4-4e7a52efb20e",
+					"id": "0efb67c4-af9f-4557-b1df-cec446e40451",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -142,7 +164,7 @@
 				},
 				{
 					"name": "zipper / state",
-					"id": "e09f5a3a-ff81-4278-81af-e1e506f49ddf",
+					"id": "19d8697a-2e41-435b-b77e-f6e3a101a0cd",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -164,7 +186,7 @@
 				},
 				{
 					"name": "uploader / state",
-					"id": "f0ffd948-b1fa-4d33-b12f-eed3a6f0041b",
+					"id": "dc7d0df3-3bc3-4b20-8c21-b5f9a428539f",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -186,29 +208,7 @@
 				},
 				{
 					"name": "stats / job",
-					"id": "00a6b1fd-dbfd-4540-8d05-1ffffcc38967",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"job_id\": {{job_id}}\r\n    }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "{{host}}/ingestor/v1/stats/job"
-					},
-					"response": []
-				},
-				{
-					"name": "stats / job Copy",
-					"id": "fd77b8da-bf63-46a5-83f0-1837e2a6528a",
+					"id": "10278d18-0ea7-4d4a-93b3-abfb5a9e130d",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -229,14 +229,14 @@
 					"response": []
 				}
 			],
-			"id": "ff716667-cc16-4864-b126-c6aac3afada3"
+			"id": "912034cf-223c-4d05-bc0f-c175a56dd7df"
 		}
 	],
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "8a90aa86-3a16-4cc3-92f4-a72857a3ea0b",
+				"id": "fe89248c-8e4c-4ab6-b067-f177d886eaf2",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -246,7 +246,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "1beeabd2-5869-46fd-835e-5241ee60d3e6",
+				"id": "05869b6c-182d-4cb9-b4dc-4a60cffb4049",
 				"type": "text/javascript",
 				"packages": {},
 				"exec": [
