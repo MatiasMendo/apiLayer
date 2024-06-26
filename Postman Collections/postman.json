@@ -205,6 +205,28 @@
 						"url": "{{host}}/ingestor/v1/stats/job"
 					},
 					"response": []
+				},
+				{
+					"name": "stats / job Copy",
+					"id": "fd77b8da-bf63-46a5-83f0-1837e2a6528a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"job_id\": {{job_id}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/stats/job"
+					},
+					"response": []
 				}
 			],
 			"id": "ff716667-cc16-4864-b126-c6aac3afada3"
@@ -214,7 +236,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "99ffc99b-0d30-433f-af44-85944edd20b6",
+				"id": "8a90aa86-3a16-4cc3-92f4-a72857a3ea0b",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -224,8 +246,9 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "76f501d8-daa8-4011-bb89-fbe6120a705b",
+				"id": "1beeabd2-5869-46fd-835e-5241ee60d3e6",
 				"type": "text/javascript",
+				"packages": {},
 				"exec": [
 					""
 				]
