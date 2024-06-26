@@ -6,6 +6,7 @@ const mongoo = require('./ingestor_apilayer_mongoo.js');
  * 
  {
 "tenant_id": "my_tenant_id",
+"version": 0,
 "active":true,
 "description": "my test tenant",
 "folder_base": "/home/tenant",

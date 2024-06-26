@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-
+/*
 var MicroserviceDataSchema = new Schema({
     name: {
         type: Schema.Types.String,
@@ -42,7 +42,7 @@ var MicroservicesDataSchema = new Schema({
     }
  })
 
-
+*/
 var UrlDataSchema = new Schema({
     addon_downloader: {
         type: Schema.Types.String,
@@ -53,6 +53,10 @@ var UrlDataSchema = new Schema({
 var StatsconfigDataSchema = new Schema({
     tenant_id: {
         type: Schema.Types.String,
+        required: true
+    },
+    version: {
+        type: Schema.Types.Number,
         required: true
     },
     active: {
@@ -72,7 +76,7 @@ var StatsconfigDataSchema = new Schema({
         required: true
     },
     microservices: {
-        type: MicroservicesDataSchema,
+        type: Schema.Types.Mixed,
         required: true
     }
 })
