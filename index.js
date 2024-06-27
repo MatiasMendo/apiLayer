@@ -82,7 +82,13 @@ app.get(baseroute + '/metadata', function (req, res) {
 //API para la extracción de las configuraciones
 app.get(baseroute + '/configuration', function (req, res) {
 	logger.debug('[APILAYER][main] API configuration');
-	config.get(req.body, res);
+	if (Object.keys(req.query).length > 0) {//axios
+		config.get(JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		config.get(req.body, res);
+
+	}
 });
 
 
