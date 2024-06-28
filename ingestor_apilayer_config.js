@@ -58,7 +58,7 @@ exports.get = async function (body, res) {
     ConfigData.findOne({ tenant_id: body.tenant_id, active:true }).exec().then((query) => {
         if(null != query) {
             // Envia la respuesta con la configuración del tenant
-            res.send(JSON.stringify(query));
+            res.send(query);
         }
         else {
             logger.info("[APILAYER][getconfig] Error in parameter tenant_id, no exist this in db o is inactive");

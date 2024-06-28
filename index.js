@@ -6,6 +6,7 @@ const jobs = require('./ingestor_apilayer_jobs.js');
 const statsjob = require('./ingestor_apilayer_statsjob.js');
 const config = require('./ingestor_apilayer_config.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
+const newfiles = require('./ingestor_apilayer_newfiles.js');
 const logger = require('./utils/Logger.js');
 
 
@@ -94,28 +95,59 @@ app.get(baseroute + '/configuration', function (req, res) {
 
 //
 // procesa todos los endpoint de cambio de estado
+// y extracción de audios a procesar
 //
 
 app.patch(baseroute + '/input/state', function (req, res) {
-	logger.debug('[APILAYER][main] API input')
+	logger.debug('[APILAYER][main] API state input')
 
 	status.update('input', req.body, res)
 });
 
 app.patch(baseroute + '/converter/state', function (req, res) {
-	logger.debug('[APILAYER][main] API converter')
+	logger.debug('[APILAYER][main] API state converter')
 
 	status.update('converter', req.body, res)
 });
 
+app.get(baseroute + '/converter/newfiles', function (req, res) {
+	logger.debug('[APILAYER][main] API newfiles converter');
+	if (Object.keys(req.query).length > 0) {//axios
+		newfiles.get('converter', JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		newfiles.get('converter', req.body, res);
+	}
+});
+
 app.patch(baseroute + '/zipper/state', function (req, res) {
-	logger.debug('[APILAYER][main] API zipper')
+	logger.debug('[APILAYER][main] API state zipper')
 
 	status.update('zipper', req.body, res)
 });
 
+app.get(baseroute + '/zipper/newfiles', function (req, res) {
+	logger.debug('[APILAYER][main] API newfiles zipper');
+	if (Object.keys(req.query).length > 0) {//axios
+		newfiles.get('zipper', JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		newfiles.get('zipper', req.body, res);
+	}
+});
+
 app.patch(baseroute + '/uploader/state', function (req, res) {
-	logger.debug('[APILAYER][main] API uploader')
+	logger.debug('[APILAYER][main] API state uploader')
 
 	status.update('uploader', req.body, res)
+});
+
+app.get(baseroute + '/uploader/newfiles', function (req, res) {
+	logger.debug('[APILAYER][main] API newfiles uploader');
+	if (Object.keys(req.query).length > 0) {//axios
+		newfiles.get('uploader', JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		newfiles.get('uploader', req.body, res);
+	}
 });
