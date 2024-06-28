@@ -59,7 +59,7 @@ app.patch(baseroute + '/new', function (req, res) {
 
 app.get(baseroute + '/job', function (req, res) {
 	logger.debug('[APILAYER][main] API get - job')
-	if (Object.keys(req.query.body).length > 0) {//axios
+	if (Object.keys(req.query).length > 0) {//axios
 		jobs.get_job(JSON.parse(req.query.body), res);
 	}
 	else { //postman
@@ -69,15 +69,25 @@ app.get(baseroute + '/job', function (req, res) {
 
 //API para estad�sticas
 app.get(baseroute + '/stats/job', function (req, res) {
-	logger.debug('[APILAYER][main] API get - job/stats')
-	statsjob.get_statsjob(req.body, res);
+	logger.debug('[APILAYER][main] API new - statsjob');
+	if (Object.keys(req.query).length > 0) {//axios
+		statsjob.get(JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		statsjob.get(req.body, res);
+	}
 });
 
 
 //API para la extracci�n de metadata desde archivo
 app.get(baseroute + '/metadata', function (req, res) {
 	logger.debug('[APILAYER][main] API new - metadata');
-	metadata.get(req.body, res);
+	if (Object.keys(req.query).length > 0) {//axios
+		metadata.get(JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		metadata.get(req.body, res);
+	}
 });
 
 //API para la extracción de las configuraciones
@@ -88,7 +98,6 @@ app.get(baseroute + '/configuration', function (req, res) {
 	}
 	else { //postman
 		config.get(req.body, res);
-
 	}
 });
 
