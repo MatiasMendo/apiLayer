@@ -207,6 +207,28 @@
 					"response": []
 				},
 				{
+					"name": "converter / newfiles",
+					"id": "f807441f-5413-401f-831e-cbebcc41ae1d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/zipper/newfiles"
+					},
+					"response": []
+				},
+				{
 					"name": "uploader / state",
 					"id": "dc7d0df3-3bc3-4b20-8c21-b5f9a428539f",
 					"protocolProfileBehavior": {
@@ -225,6 +247,28 @@
 							}
 						},
 						"url": "{{host}}/ingestor/v1/uploader/state"
+					},
+					"response": []
+				},
+				{
+					"name": "uploader/ newfiles",
+					"id": "04b53216-01d6-46e7-a7cd-20a3093b9a71",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/uploader/newfiles"
 					},
 					"response": []
 				},
