@@ -163,6 +163,28 @@
 					"response": []
 				},
 				{
+					"name": "converter / newfiles",
+					"id": "9c61ec13-01d2-45c2-b902-757162e59261",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}}\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/ingestor/v1/configuration"
+					},
+					"response": []
+				},
+				{
 					"name": "zipper / state",
 					"id": "19d8697a-2e41-435b-b77e-f6e3a101a0cd",
 					"protocolProfileBehavior": {
