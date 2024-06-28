@@ -207,7 +207,7 @@
 					"response": []
 				},
 				{
-					"name": "converter / newfiles",
+					"name": "zipper / newfiles",
 					"id": "f807441f-5413-401f-831e-cbebcc41ae1d",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
