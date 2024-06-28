@@ -180,7 +180,7 @@
 								}
 							}
 						},
-						"url": "{{host}}/ingestor/v1/configuration"
+						"url": "{{host}}/ingestor/v1/converter/newfiles"
 					},
 					"response": []
 				},
