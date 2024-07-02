@@ -4,6 +4,10 @@ var RecordingDataSchema = require('./models/RecordingData.js');
 var StatsjobDataSchema = require('./models/StatsjobData.js');
 var ConfigDataSchema = require('./models/ConfigData.js');
 const logger = require ("./utils/Logger.js");
+const dotenv = require("dotenv");
+
+dotenv.config();
+
 
 class Mongoo {
     static instance() {
@@ -13,8 +17,8 @@ class Mongoo {
     }
 
     constructor() {
-        this.databaseURL = "mongodb+srv://rodrigotobar:QLUoe48d3viEOzZ7@cluster.9wvliio.mongodb.net/?retryWrites=true&w=majority&appName=Cluster";
-        this.initialized = false; 
+	this.databaseURL = process.env.MONGOURL;
+	this.initialized = false; 
         this.connection = null;
         this.mytenants = [];
         this.jobsdb = 'ingestorjob';
@@ -24,7 +28,7 @@ class Mongoo {
 
     async init(connectionString) {
         try {
-            this.connection = await mongoodb.instance().init(this.databaseURL, this.jobsdb);
+            this.connection = await mongoodb.instance().init();//this.databaseURL, this.jobsdb);
             this.initialized = true;
         } catch(error) {
             logger.error("[APILAYER][Mongoo][Error] No se realizó la conexión a MongoDB DB: " + this.jobsdb);

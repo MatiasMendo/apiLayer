@@ -8,14 +8,16 @@ const config = require('./ingestor_apilayer_config.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
 const newfiles = require('./ingestor_apilayer_newfiles.js');
 const logger = require('./utils/Logger.js');
+const dotenv = require ('dotenv');
 
-
+dotenv.config();
+const port = process.env.PORT ;
 
 var app = express();
 
 
 mongoo.instance().init().then(() => {
-	let server = app.listen(8081, function () {
+	let server = app.listen(port, function () {
 		let host = server.address().address;
 		let port = server.address().port;
 
@@ -46,13 +48,13 @@ app.use((err, req, res, next) => {
 let baseroute = '/ingestor/v1'
 
 //Endpoints relacionados a crear nuevas ejecuciones o Jobs
-app.post(baseroute + '/new', bodyParser.json(), function (req, res) {
+app.post(baseroute + '/new', bodyParser.json({ limit: '1000mb' }), function (req, res) {
 	logger.debug('[APILAYER][main] API new')
 	jobs.new_job(req.body, res)
 	
 });
 
-app.patch(baseroute + '/new', function (req, res) {
+app.patch(baseroute + '/new', bodyParser.json({ limit: '1000mb' }),function (req, res) {
 	logger.debug('[APILAYER][main] API new - patch')
 	jobs.append_job(req.body, res);
 });

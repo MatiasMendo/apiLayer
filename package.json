@@ -9,9 +9,11 @@
   "author": "Rodrigo Tobar",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "log4js": "^6.9.1",
     "mongoose": "^8.3.3",
     "uuid": "^9.0.1"
   },
-  "devDependencies": {},
   "keywords": []
 }
