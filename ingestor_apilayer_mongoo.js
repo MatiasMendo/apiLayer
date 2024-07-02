@@ -22,7 +22,7 @@ class Mongoo {
         this.connection = null;
         this.mytenants = [];
         this.jobsdb = 'ingestorjob';
-        this.configdb = 'ingestorconfig';
+        this.configdb = 'Api_Layer_configs';
         this.myconfig = null;
     }
 

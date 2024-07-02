@@ -53,7 +53,7 @@ exports.get = async function (body, res) {
         res.status(400).send();
         return;
     }
-   
+    
     let ConfigData = mongoo.instance().ModelConfig();
     ConfigData.findOne({ tenant_id: body.tenant_id, active:true }).exec().then((query) => {
         if(null != query) {
