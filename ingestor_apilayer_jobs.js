@@ -3,6 +3,7 @@ const mongoo = require('./ingestor_apilayer_mongoo.js');
 const statsjob = require('./ingestor_apilayer_statsjob.js');
 const { v4: uuidv4 } = require('uuid');
 
+const max_files_newjob = 75;
 
 
 function check_andbuild(body, newjob, maxelem) {
@@ -67,7 +68,7 @@ async function insert_job(body, res, newjob) {
 
     let mydocuments = null;
     try {
-        mydocuments = check_andbuild(body, newjob, 2);
+        mydocuments = check_andbuild(body, newjob, max_files_newjob);
     }
     catch (e) {
         logger.info('[APILAYER][new] Bad body, returning code 400 ' + e.message)
