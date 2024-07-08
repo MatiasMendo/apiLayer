@@ -15,7 +15,7 @@ exports.update = async function (module, body, res) {
 	}
 
 	//
-	//chequea los stados válidos
+	//chequea los stados vï¿½lidos
 	if ((body.state !== "STARTING") &&
 		(body.state !== "FINISHED") &&
 		(body.state !== "BAD_FILE") &&

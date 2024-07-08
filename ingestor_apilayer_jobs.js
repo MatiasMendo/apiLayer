@@ -67,7 +67,7 @@ async function insert_job(body, res, newjob) {
 
     let mydocuments = null;
     try {
-        mydocuments = check_andbuild(body, newjob, 2);
+        mydocuments = check_andbuild(body, newjob, parseInt(100000*999));
     }
     catch (e) {
         logger.info('[APILAYER][new] Bad body, returning code 400 ' + e.message)
@@ -101,7 +101,7 @@ async function insert_job(body, res, newjob) {
                 'total': docs.length
             });
 
-            //inserta estadísticas
+            //inserta estad sticas
             if (newjob) {
                 statsjob.initjob(mytenant_id, myjob_id, myjob_time, docs.length);
             }

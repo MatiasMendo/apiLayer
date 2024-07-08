@@ -34,7 +34,7 @@ log4js.configure( {
 			maxLogSize: 31457280,
 			backups   : 30,
 			pattern   : "yyyy-MM-dd.log",
-			filename  : path.join( './', 'log', 'ingestor_api_layer.log' )
+			filename  : path.join( '/tmp/datareport', 'log', 'DataParticipant' )
 		}
 	},
 	categories: {

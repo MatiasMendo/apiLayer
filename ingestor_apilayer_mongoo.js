@@ -2,12 +2,11 @@ var mongoose = require('mongoose');
 var mongoodb = require('./utils/MongooDB.js');
 var RecordingDataSchema = require('./models/RecordingData.js');
 var StatsjobDataSchema = require('./models/StatsjobData.js');
-var ConfigDataSchema = require('./models/ConfigData.js');
 const logger = require ("./utils/Logger.js");
-const dotenv = require("dotenv");
 
-dotenv.config();
+const dotenv = require("dotenv")
 
+dotenv.config()
 
 class Mongoo {
     static instance() {
@@ -17,21 +16,18 @@ class Mongoo {
     }
 
     constructor() {
-	this.databaseURL = process.env.MONGOURL;
-	this.initialized = false; 
+        this.databaseURL = process.env.MONGOURL;
+        this.initialized = false; 
         this.connection = null;
         this.mytenants = [];
-        this.jobsdb = 'ingestorjob';
-        this.configdb = 'Api_Layer_configs';
-        this.myconfig = null;
     }
 
     async init(connectionString) {
         try {
-            this.connection = await mongoodb.instance().init();//this.databaseURL, this.jobsdb);
+            this.connection = await mongoodb.instance().init(this.databaseURL, 'ingestorjob');
             this.initialized = true;
         } catch(error) {
-            logger.error("[APILAYER][Mongoo][Error] No se realizó la conexión a MongoDB DB: " + this.jobsdb);
+            logger.error("[APILAYER][Mongoo][Error] No se realizó la conexión a MongoDB: ingestorjob ");
             throw Error (error);
         }
     }
@@ -55,25 +51,6 @@ class Mongoo {
             throw error;
         }
     }
-
-    ModelConfig() {
-        try {
-            if(null == this.myconfig) {
-                let conn = mongoose.connection.useDb(this.configdb, { useCache: true });
-                logger.info("[APILAYER][Mongoo] => Agrega conexión a DB: " + this.configdb );
-                this.myconfig = conn.model('configs', ConfigDataSchema);
-            }
-
-            return this.myconfig;
-        
-        } catch(error) {
-            throw error;
-        }
-
-    }
-
-
-
 }
 
 exports.instance = function () {
