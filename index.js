@@ -32,6 +32,7 @@ app.use(bodyParser.json())
 app.use((err, req, res, next) => {
 	if (err) {
 		logger.debug('[APILAYER][main] Error parsing data from request ' + req.url)
+		//console.log(req)
 		res.status(400).send('error parsing data')
 	} else {
 		next()
