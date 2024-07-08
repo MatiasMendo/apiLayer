@@ -68,11 +68,7 @@ async function insert_job(body, res, newjob) {
 
     let mydocuments = null;
     try {
-<<<<<<< HEAD
-        mydocuments = check_andbuild(body, newjob, parseInt(100000*999));
-=======
         mydocuments = check_andbuild(body, newjob, max_files_newjob);
->>>>>>> cdea443dde847eb4c2334157448b9532bacf5d54
     }
     catch (e) {
         logger.info('[APILAYER][new] Bad body, returning code 400 ' + e.message)
