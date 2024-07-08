@@ -22,11 +22,18 @@ exports.get = async function (body, res) {
 			res.status(400).send()
 		}
 		else {
-			logger.info("[APILAYER][metadata] file_id " + body.file_id + " found ");
-			res.send({
-				"file_id": body.file_id,
-				"metadata": JSON.stringify(doc.metadata)
-			});
-		}
-	});
+			logger.info("[APILATER][metadata] file_id " + body.file_id + " found " + typeof(doc.metadata))
+			if(typeof(doc.metadata) == 'string'){
+				res.send({
+					"file_id": body.file_id,
+					"metadata": doc.metadata
+				});
+			}
+			else {
+				res.send({
+					"file_id": body.file_id,
+					"metadata": JSON.stringify(doc.metadata)});
+				}
+			}
+		});
 }
