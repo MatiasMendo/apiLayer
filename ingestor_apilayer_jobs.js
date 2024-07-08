@@ -3,6 +3,7 @@ const mongoo = require('./ingestor_apilayer_mongoo.js');
 const statsjob = require('./ingestor_apilayer_statsjob.js');
 const { v4: uuidv4 } = require('uuid');
 
+const max_files_newjob = 75;
 
 
 function check_andbuild(body, newjob, maxelem) {
@@ -67,7 +68,11 @@ async function insert_job(body, res, newjob) {
 
     let mydocuments = null;
     try {
-        mydocuments = check_andbuild(body, newjob, 2);
+<<<<<<< HEAD
+        mydocuments = check_andbuild(body, newjob, parseInt(100000*999));
+=======
+        mydocuments = check_andbuild(body, newjob, max_files_newjob);
+>>>>>>> cdea443dde847eb4c2334157448b9532bacf5d54
     }
     catch (e) {
         logger.info('[APILAYER][new] Bad body, returning code 400 ' + e.message)
@@ -101,7 +106,7 @@ async function insert_job(body, res, newjob) {
                 'total': docs.length
             });
 
-            //inserta estadísticas
+            //inserta estad sticas
             if (newjob) {
                 statsjob.initjob(mytenant_id, myjob_id, myjob_time, docs.length);
             }

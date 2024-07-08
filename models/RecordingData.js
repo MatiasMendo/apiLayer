@@ -42,7 +42,7 @@ var RecordingDataSchema = new Schema({
         required: true
     },
     metadata: {
-        type: Schema.Types.String,
+        type: Schema.Types.Mixed,
         required: true
     },
     file_id: {

@@ -22,9 +22,10 @@ exports.get = async function (body, res) {
 			res.status(400).send()
 		}
 		else {
+			logger.info("[APILAYER][metadata] file_id " + body.file_id + " found ");
 			res.send({
 				"file_id": body.file_id,
-				"metadata": doc.metadata
+				"metadata": JSON.stringify(doc.metadata)
 			});
 		}
 	});
