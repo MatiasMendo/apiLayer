@@ -1,219 +1,164 @@
-// const express = require('express');
-// const bodyParser = require('body-parser');
-// const status = require('./ingestor_apilayer_stateupdate.js');
-// const metadata = require('./ingestor_apilayer_metadata.js');
-// const jobs = require('./ingestor_apilayer_jobs.js');
-// const statsjob = require('./ingestor_apilayer_statsjob.js');
-// const mongoo = require('./ingestor_apilayer_mongoo.js');
-// const logger = require('./utils/Logger.js');
-// const dotenv = require ('dotenv');
-// dotenv.config();
-// const port = process.env.PORT ; 
-// var app = express();
-
-// mongoo.instance().init().then(() => {
-// 	let server = app.listen(port, function () {
-// 		let host = server.address().address;
-// 		let port = server.address().port;
-
-// 		// Si host es '::', cambiar a 'localhost' para IPv4
-// 		if (host === '::') {
-// 			host = 'localhost';
-// 		}
-
-// 		logger.info("[APILAYER][main] API Layer listening at http://" + host + ":" + port);
-// 	});
-// }).catch((e) => {
-// 	logger.error("[APILAYER][main] Error " + e.message);
-// });
-
-// // app.use(bodyParser.json());
-// //app.useBodyParser('json', { limit: '1000mb' });
-// // Maneja error de parsing de data
-// app.use((err, req, res, next) => {
-// 	if (err) {
-// 		logger.debug('[APILAYER][main] Error parsing data from request ' + req.url);
-// 		res.status(400).send('error parsing data');
-// 	} else {
-// 		next();
-// 	}
-// });
-
-// //
-// // Endpoints
-// //
-
-// let baseroute = '/ingestor/v1';
-
-// // Endpoints relacionados a crear nuevas ejecuciones o Jobs
-// app.post(baseroute + '/new', bodyParser.json({ limit: '1000mb' }), function (req, res) {
-// // app.post(baseroute + '/new', function (req, res) {
-// 	logger.info(JSON.stringify(req.body))
-// 	logger.debug('[APILAYER][main] API new');
-// 	jobs.new_job(req.body, res);
-// });
-
-// app.patch(baseroute + '/new', bodyParser.json({ limit: '1000mb' }),function (req, res) {
-// 	logger.debug('[APILAYER][main] API new - patch');
-// 	jobs.append_job(req.body, res);
-// });
-
-// app.get(baseroute + '/job', function (req, res) {
-// 	logger.debug('[APILAYER][main] API get - job');
-// 	if (Object.keys(req.body).length > 0) { // axios
-// 		jobs.get_job( req.body , res);
-// 	} else { // postman
-// 		jobs.get_job(req.body, res);
-// 	}
-// });
-
-// // API para estadísticas
-// app.get(baseroute + '/stats/job', function (req, res) {
-// 	logger.debug('[APILAYER][main] API get - job/stats');
-// 	statsjob.get_statsjob(req.body, res);
-// });
-
-// // API para la extracción de metadata desde archivo
-// app.get(baseroute + '/metadata', function (req, res) {
-// 	logger.debug('[APILAYER][main] API new - metadata');
-// 	metadata.get(req.body, res);
-// });
-
-// //
-// // Procesa todos los endpoint de cambio de estado
-// //
-
-// app.patch(baseroute + '/input/state', function (req, res) {
-// 	logger.debug('[APILAYER][main] API input');
-
-// 	status.update('input', req.body, res);
-// });
-
-// app.patch(baseroute + '/converter/state', function (req, res) {
-// 	logger.debug('[APILAYER][main] API converter');
-
-// 	status.update('converter', req.body, res);
-// });
-
-// app.patch(baseroute + '/zipper/state', function (req, res) {
-// 	logger.debug('[APILAYER][main] API zipper');
-
-// 	status.update('zipper', req.body, res);
-// });
-
-// app.patch(baseroute + '/uploader/state', function (req, res) {
-// 	logger.debug('[APILAYER][main] API uploader');
-
-// 	status.update('uploader', req.body, res);
-// });
-
-
-
-
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const status = require('./ingestor_apilayer_stateupdate.js');
 const metadata = require('./ingestor_apilayer_metadata.js');
 const jobs = require('./ingestor_apilayer_jobs.js');
 const statsjob = require('./ingestor_apilayer_statsjob.js');
+const config = require('./ingestor_apilayer_config.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
+const newfiles = require('./ingestor_apilayer_newfiles.js');
 const logger = require('./utils/Logger.js');
 const dotenv = require ('dotenv');
+
 dotenv.config();
-const port = process.env.PORT ; 
+const port = process.env.PORT ;
+
 var app = express();
+
 
 mongoo.instance().init().then(() => {
 	let server = app.listen(port, function () {
 		let host = server.address().address;
 		let port = server.address().port;
 
-		// Si host es '::', cambiar a 'localhost' para IPv4
-		if (host === '::') {
-			host = 'localhost';
-		}
-
 		logger.info("[APILAYER][main] API Layer listening at http://" + host + ":" + port);
-	});
+	})
 }).catch((e) => {
-	logger.error("[APILAYER][main] Error " + e.message);
+	logger.error("[APILAYER][main] Error " + e.message)
 });
 
-app.use(bodyParser.json());
 
-// Maneja error de parsing de data
+
+app.use(bodyParser.json())
+//Maneja error de parsing de data
 app.use((err, req, res, next) => {
 	if (err) {
-		logger.debug('[APILAYER][main] Error parsing data from request ' + req.url);
-		res.status(400).send('error parsing data');
+		logger.debug('[APILAYER][main] Error parsing data from request ' + req.url)
+		res.status(400).send('error parsing data')
 	} else {
-		next();
+		next()
 	}
-});
+})
+
 
 //
-// Endpoints
+//Endpoints
 //
 
-let baseroute = '/ingestor/v1';
+let baseroute = '/ingestor/v1'
 
-// Endpoints relacionados a crear nuevas ejecuciones o Jobs
+//Endpoints relacionados a crear nuevas ejecuciones o Jobs
 app.post(baseroute + '/new', bodyParser.json({ limit: '1000mb' }), function (req, res) {
-	logger.debug('[APILAYER][main] API new');
-	jobs.new_job(req.body, res);
+	logger.debug('[APILAYER][main] API new')
+	jobs.new_job(req.body, res)
+	
 });
 
-app.patch(baseroute + '/new', bodyParser.json({ limit: '1000mb' }), function (req, res) {
-	logger.debug('[APILAYER][main] API new - patch');
+app.patch(baseroute + '/new', bodyParser.json({ limit: '1000mb' }),function (req, res) {
+	logger.debug('[APILAYER][main] API new - patch')
 	jobs.append_job(req.body, res);
 });
 
 app.get(baseroute + '/job', function (req, res) {
-	logger.debug('[APILAYER][main] API get - job');
-	if (Object.keys(req.body).length > 0) { // axios
-		jobs.get_job( req.body , res);
-	} else { // postman
+	logger.debug('[APILAYER][main] API get - job')
+	if (Object.keys(req.query).length > 0) {//axios
+		jobs.get_job(JSON.parse(req.query.body), res);
+	}
+	else { //postman
 		jobs.get_job(req.body, res);
 	}
 });
 
-// API para estadísticas
+//API para estad�sticas
 app.get(baseroute + '/stats/job', function (req, res) {
-	logger.debug('[APILAYER][main] API get - job/stats');
-	statsjob.get_statsjob(req.body, res);
+	logger.debug('[APILAYER][main] API new - statsjob');
+	if (Object.keys(req.query).length > 0) {//axios
+		statsjob.get(JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		statsjob.get(req.body, res);
+	}
 });
 
-// API para la extracción de metadata desde archivo
+
+//API para la extracci�n de metadata desde archivo
 app.get(baseroute + '/metadata', function (req, res) {
 	logger.debug('[APILAYER][main] API new - metadata');
-	metadata.get(req.body, res);
+	if (Object.keys(req.query).length > 0) {//axios
+		metadata.get(JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		metadata.get(req.body, res);
+	}
 });
 
+//API para la extracción de las configuraciones
+app.get(baseroute + '/configuration', function (req, res) {
+	logger.debug('[APILAYER][main] API configuration');
+	if (Object.keys(req.query).length > 0) {//axios
+		config.get(JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		config.get(req.body, res);
+	}
+});
+
+
 //
-// Procesa todos los endpoint de cambio de estado
+// procesa todos los endpoint de cambio de estado
+// y extracción de audios a procesar
 //
 
 app.patch(baseroute + '/input/state', function (req, res) {
-	logger.debug('[APILAYER][main] API input');
+	logger.debug('[APILAYER][main] API state input')
 
-	status.update('input', req.body, res);
+	status.update('input', req.body, res)
 });
 
 app.patch(baseroute + '/converter/state', function (req, res) {
-	logger.debug('[APILAYER][main] API converter');
+	logger.debug('[APILAYER][main] API state converter')
 
-	status.update('converter', req.body, res);
+	status.update('converter', req.body, res)
+});
+
+app.get(baseroute + '/converter/newfiles', function (req, res) {
+	logger.debug('[APILAYER][main] API newfiles converter');
+	if (Object.keys(req.query).length > 0) {//axios
+		newfiles.get('converter', JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		newfiles.get('converter', req.body, res);
+	}
 });
 
 app.patch(baseroute + '/zipper/state', function (req, res) {
-	logger.debug('[APILAYER][main] API zipper');
+	logger.debug('[APILAYER][main] API state zipper')
 
-	status.update('zipper', req.body, res);
+	status.update('zipper', req.body, res)
+});
+
+app.get(baseroute + '/zipper/newfiles', function (req, res) {
+	logger.debug('[APILAYER][main] API newfiles zipper');
+	if (Object.keys(req.query).length > 0) {//axios
+		newfiles.get('zipper', JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		newfiles.get('zipper', req.body, res);
+	}
 });
 
 app.patch(baseroute + '/uploader/state', function (req, res) {
-	logger.debug('[APILAYER][main] API uploader');
+	logger.debug('[APILAYER][main] API state uploader')
 
-	status.update('uploader', req.body, res);
+	status.update('uploader', req.body, res)
+});
+
+app.get(baseroute + '/uploader/newfiles', function (req, res) {
+	logger.debug('[APILAYER][main] API newfiles uploader');
+	if (Object.keys(req.query).length > 0) {//axios
+		newfiles.get('uploader', JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		newfiles.get('uploader', req.body, res);
+	}
 });
