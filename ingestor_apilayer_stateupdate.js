@@ -57,8 +57,9 @@ exports.update = async function (module, body, res) {
 				statsjob.updatestate(body.tenant_id, doc.job_id, module, body.state, doc.duration)
 				logger.info("[APILAYER][status update] file_id " + body.file_id + ", updated stage " + module + " to " + body.state);
 			}
+			res.send();
 		})
-		res.send();
+		//res.send();
 	}
 	else {
 		logger.error("[APILAYER][status update] Error, modulo no existe " + module)
