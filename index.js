@@ -12,12 +12,13 @@ const dotenv = require ('dotenv');
 
 dotenv.config();
 const port = process.env.PORT ;
+const ip = process.env.IP ;
 
 var app = express();
 
 
 mongoo.instance().init().then(() => {
-	let server = app.listen(port, function () {
+	let server = app.listen(port, ip, function () {
 		let host = server.address().address;
 		let port = server.address().port;
 
