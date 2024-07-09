@@ -17,7 +17,7 @@ var app = express();
 
 
 mongoo.instance().init().then(() => {
-	let server = app.listen(port, function () {
+	let server = app.listen(port,'10.20.24.79', function () {
 		let host = server.address().address;
 		let port = server.address().port;
 
