@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var mongoodb = require('./utils/MongooDB.js');
 var RecordingDataSchema = require('./models/RecordingData.js');
 var StatsjobDataSchema = require('./models/StatsjobData.js');
+var ConfigDataSchema = require('./models/ConfigData.js');
 const logger = require ("./utils/Logger.js");
-
 const dotenv = require("dotenv")
 
 dotenv.config()
@@ -19,6 +19,8 @@ class Mongoo {
         this.initialized = false; 
         this.connection = null;
         this.mytenants = [];
+        this.configdb = 'Api_Layer_configs';
+        this.myconfig = null;
     }
 
     async init() {
@@ -50,7 +52,27 @@ class Mongoo {
             throw error;
         }
     }
+
+    ModelConfig() {
+        try {
+            if(null == this.myconfig) {
+                let conn = mongoose.connection.useDb(this.configdb, { useCache: true });
+                logger.info("[APILAYER][Mongoo] => Agrega conexión a DB: " + this.configdb );
+                this.myconfig = conn.model('configs', ConfigDataSchema);
+            }
+    
+            return this.myconfig;
+        
+        } catch(error) {
+            throw error;
+        }
+    
+    }
+    
 }
+
+
+
 
 exports.instance = function () {
     return Mongoo.instance();
