@@ -16,15 +16,14 @@ class Mongoo {
     }
 
     constructor() {
-        this.databaseURL = process.env.MONGOURL;
         this.initialized = false; 
         this.connection = null;
         this.mytenants = [];
     }
 
-    async init(connectionString) {
+    async init() {
         try {
-            this.connection = await mongoodb.instance().init(this.databaseURL, 'ingestorjob');
+            this.connection = await mongoodb.instance().init();
             this.initialized = true;
         } catch(error) {
             logger.error("[APILAYER][Mongoo][Error] No se realizó la conexión a MongoDB: ingestorjob ");

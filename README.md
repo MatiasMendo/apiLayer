@@ -8,9 +8,10 @@ API v1::REST LAYER
 
 # Archivo .env
 MONGODB=wwwwww //Database a usar para datos de los tenants
-MONGOURL='mongodb://xxxxxx:27017'  //String de conexión
-MONGOUSER=yyyyy
-MONGOPASS=zzzzz
+MONGOSTRCONNECTION=xxxxx // String de conexión con user y password ejemplo 'mongodb://user:password@yyyyy:27017'
+#Colocar true si es ambiente con documentdb
+DOCUMENTDB=false 
+
 
 PORT=9991
-IP=127.0.0.1  //IP en donde escuchara por requests
+#IP='xx.xxx.xx'  //IP en donde escuchara por requests. Descomentar si es diferente a 127.0.0.1
