@@ -55,13 +55,15 @@ exports.get = async function (body, res) {
     }
     
     let ConfigData = mongoo.instance().ModelConfig();
-    ConfigData.findOne({ tenant_id: body.tenant_id, active:true }).exec().then((query) => {
+    ConfigData.find({ tenant_id: body.tenant_id, active:true }).sort({version: -1}).limit(1).exec().then((query) => {
         if(null != query) {
             // Envia la respuesta con la configuración del tenant
-            res.send(query);
+
+            res.send(query[0]);
+            logger.info("[APILAYER][getconfig] Returning configuration version "+ query[0].version +", to tenant_id: "+ body.tenant_id );
         }
         else {
-            logger.info("[APILAYER][getconfig] Error in parameter tenant_id, no exist this in db o is inactive");
+            logger.info("[APILAYER][getconfig] Error in parameter tenant_id "+ body.tenant_id +", no exist this in db o is inactive");
             res.status(400).send();
         }
 
