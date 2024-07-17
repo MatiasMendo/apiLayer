@@ -38,6 +38,10 @@ var FilesDataSchema = new Schema({
     error: {
         type: Schema.Types.Number,
         required: true
+    },
+    quota: {
+        type: Schema.Types.Number,
+        required: true
     }
 })
 

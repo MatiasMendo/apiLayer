@@ -1,4 +1,5 @@
 const logger = require('./utils/Logger.js');
+const quota = require('./utils/Quota.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
 const statsjob = require('./ingestor_apilayer_statsjob.js');
 const { v4: uuidv4 } = require('uuid');
@@ -127,6 +128,8 @@ exports.append_job = async function (body, res) {
     insert_job(body, res, false);
 }
 
+
+//extrae registros desde mongodb. Gatillado por microservicios input 
 exports.get_job = async function (body, res) {
 
     if ((undefined == body.tenant_id) || (typeof body.tenant_id != "string")) {
@@ -141,38 +144,59 @@ exports.get_job = async function (body, res) {
         return;
     }
 
+    let qt = quota.getObject(body.tenant_id); //chequeará quota
+    const overhead = 5;
     let RecordingData = mongoo.instance().Models(body.tenant_id).RecordingDataSchema;
-    RecordingData.find({ status: 'IDLE' }).limit(body.limit).exec().then((query) => {
-
+    RecordingData.find({ status: 'IDLE' }).limit(overhead * body.limit).exec().then(async (query) => {
         let documents = [];
         let idx = 0;
         if (null != query) {
-            query.forEach((doc) => {
-                documents[idx] = {
-                    "tenant_id": doc.tenant_id,
-                    "job_id": doc.job_id,
-                    "source": doc.source,
-                    "duration": doc.duration,
-                    "file_id": doc.file_id,
-                    "type": doc.type
-                };
-                idx++;
+            for(let i=0; ((i < query.length) && (idx < body.limit)); i++) {
+                let doc = query[i];
+                let quotareached = null;
 
-                //update el documento a processing
-                doc.status = "PROCESSING";
-                doc.input_time = new Date();
-                doc.save();
+                try {
+                    quotareached = await qt.reached(doc.job_id);
+                }
+                catch(e) {
+                    logger.info("[APILAYER][getjob] Error getting quota: " + e);
+                }
 
-                statsjob.retrieved(doc.tenant_id, doc.job_id);
-            })
+                if(quotareached == false) { //entra si quota no está alcanzada
+                    documents[idx] = {
+                        "tenant_id": doc.tenant_id,
+                        "job_id": doc.job_id,
+                        "source": doc.source,
+                        "duration": doc.duration,
+                        "file_id": doc.file_id,
+                        "type": doc.type
+                    };
+                    idx++;
+                    //update el documento a processing
+                    doc.status = "PROCESSING";
+                    doc.input_time = new Date();
+                    doc.save();
+                
+                    statsjob.retrieved(doc.tenant_id, doc.job_id, false);
+                }
+                else if(quotareached == true) { //entra si quota está alcanzada
+                    doc.status = "QUOTA_EXECEEDED";
+                    doc.input_time = new Date();
+                    doc.save();
+
+                    statsjob.retrieved(doc.tenant_id, doc.job_id, true);
+                }
+                else {
+                    logger.info("[APILAYER][getjob] Error, invalid quotareached: " + quotareached);
+                }
+            }
         } 
-        // Envia los audios
+            // Envia los audios
         res.send({
             "total": idx,
             "audios": documents
         })
 
-        
     })
 }
 

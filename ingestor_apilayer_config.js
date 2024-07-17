@@ -44,6 +44,15 @@ const mongoo = require('./ingestor_apilayer_mongoo.js');
  * 
  * 
  */
+exports.getConfigurationObject = async function(tenantid_) {
+  return getConfigurationObjectQuery(tenantid_);
+}
+
+
+async function getConfigurationObjectQuery(tenantid) {
+  let ConfigData = mongoo.instance().ModelConfig();
+  return ConfigData.find({ tenant_id: tenantid, active:true }).sort({version: -1}).limit(1).exec();
+}
 
 
 exports.get = async function (body, res) {
@@ -54,11 +63,9 @@ exports.get = async function (body, res) {
         return;
     }
     
-    let ConfigData = mongoo.instance().ModelConfig();
-    ConfigData.find({ tenant_id: body.tenant_id, active:true }).sort({version: -1}).limit(1).exec().then((query) => {
+    getConfigurationObjectQuery(body.tenant_id).then((query) => {
         if(null != query) {
             // Envia la respuesta con la configuración del tenant
-
             res.send(query[0]);
             logger.info("[APILAYER][getconfig] Returning configuration version "+ query[0].version +", to tenant_id: "+ body.tenant_id );
         }
@@ -66,11 +73,6 @@ exports.get = async function (body, res) {
             logger.info("[APILAYER][getconfig] Error in parameter tenant_id "+ body.tenant_id +", no exist this in db o is inactive");
             res.status(400).send();
         }
-
-
-            
-
-        
     })
 }
 

@@ -14,7 +14,8 @@ exports.initjob = async function (otenant_id, ojob_id, ojob_time, ototal) {
             retrieved: 0,
             processing: 0,
             finished: 0,
-            error:0
+            error:0,
+            quota:0
         },
         seconds: {
             finished: 0,
@@ -26,6 +27,8 @@ exports.initjob = async function (otenant_id, ojob_id, ojob_time, ototal) {
     var sjddoc = new StatsjobData(document);
     sjddoc.save();
 }
+
+
 
 //agrega archivos a job existente, incrementa contadores iniciales
 exports.appendjob = async function (otenant_id, ojob_id, ototal) {
@@ -43,15 +46,27 @@ exports.appendjob = async function (otenant_id, ojob_id, ototal) {
     });
 }
 
+
+
 //se toman archivos, cambia de estado archivos de idle a retreived
-exports.retrieved = async function (otenant_id, ojob_id) {
+exports.retrieved = async function (otenant_id, ojob_id, quotaxceeded) {
 
     const StatsjobData = mongoo.instance().Models(otenant_id).StatsjobDataSchema;
-    StatsjobData.findOneAndUpdate({ "job_id": ojob_id }, {
-        $inc: {
+    let query = {
+        "files.idle": -1,
+        "files.retrieved": 1,
+    };
+
+    if (quotaxceeded) { //si la cuota está excedida, se agrega a estadísticas
+        query = {
             "files.idle": -1,
             "files.retrieved": 1,
-        }
+            "files.quota": 1
+        };
+    } 
+
+    StatsjobData.findOneAndUpdate({ "job_id": ojob_id }, {
+        $inc: query
     }).exec().then((doc) => {
         if (null == doc) {
             logger.info("[APILAYER][appendjob-stats] Error in parameter job_id " + ojob_id);
@@ -59,7 +74,9 @@ exports.retrieved = async function (otenant_id, ojob_id) {
     });
 }
 
-//actualiza estados
+
+
+//actualiza estados para la ejecución de cada audio
 exports.updatestate = async function (otenant_id, ojob_id, omodule, ostate, oduration) {
 
     console.log(omodule + " " + ostate)
@@ -96,8 +113,25 @@ exports.updatestate = async function (otenant_id, ojob_id, omodule, ostate, odur
 }
 
 
+//
+// retorna un objeto JSON con las estadísticas asociadas al job en consulta 
+//
+async function getStatsObjectQuery(tenantid, jobid) {
+    let StatsjobData = mongoo.instance().Models(tenantid).StatsjobDataSchema;
+    return StatsjobData.findOne({ "job_id": jobid }).exec();
+}
 
-//maneja respuestas a la API
+//
+// retorna un objeto JSON con las estadísticas asociadas al job en consulta 
+// como módulo
+//
+exports.getStatsObject = async function(tenantid, jobid) {
+    return getStatsObjectQuery(tenantid, jobid);
+}
+
+//
+//maneja respuestas a la API de consulta de estadísticas por job
+//
 exports.get_statsjob = async function (body, res) {
 
     if ((typeof body.tenant_id != "string") &&
@@ -107,8 +141,7 @@ exports.get_statsjob = async function (body, res) {
         return
     }
 
-    const StatsjobData = mongoo.instance().Models(body.tenant_id).StatsjobDataSchema;
-    StatsjobData.findOne({ "job_id": body.job_id }).exec().then((doc) => {
+    getStatsObjectQuery(body.tenant_id, body.job_id).then((doc) => {
         if (null == doc) {
             logger.info("[APILAYER][getstatsjob] Error in parameter job_id " + body.job_id);
             res.status(400).send();
@@ -127,8 +160,21 @@ exports.get_statsjob = async function (body, res) {
             }
         });
     });
+}
 
 
 
+// retorna un objeto JSON que contiene los segundos de audio
+// que han sido correctamente procesados para el tenant
+exports.getStatsTenantMonthly = async function(tenantid) {
+    let StatsjobData = mongoo.instance().Models(tenantid).StatsjobDataSchema;
+    let date = new Date();
+    let firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+    return StatsjobData.aggregate([
+        { $match: { $and: [ {"tenant_id": tenantid}, {"job_time": { $gte: firstDay, $lte: lastDay }}] }},
+        { $group: {_id: null, "finished" : { $sum: "$seconds.finished" } } }
+    ]).exec();
 }
 
