@@ -76,4 +76,32 @@ exports.get = async function (body, res) {
     })
 }
 
+
+exports.getAllTenants = async function() {
+  let ConfigData = mongoo.instance().ModelConfig();
+  try {
+    let mbuckets = await ConfigData.aggregate([
+      { 
+        $match : {
+           active:true } },
+      { 
+        $bucketAuto : {
+          groupBy: "$tenant_id",
+          buckets: 100000
+        }
+      }
+    ]).exec();
+
+    let toret = [];
+    mbuckets.forEach((b) => {
+      toret.push(b._id.min)
+    });
+
+    return toret;
+  } catch(e) {
+    logger.error("[APILAYER][getAllTenants] getting all tenants: " + e);
+  }
+ 
+}
+
      

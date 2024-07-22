@@ -9,6 +9,9 @@ const mongoo = require('./ingestor_apilayer_mongoo.js');
 const newfiles = require('./ingestor_apilayer_newfiles.js');
 const logger = require('./utils/Logger.js');
 const dotenv = require ('dotenv');
+const { fork } = require('node:child_process');
+
+logger.info("[APILAYER][main] API Layer starting ");
 
 dotenv.config();
 const port = process.env.PORT ;
@@ -16,6 +19,27 @@ const ip = process.env.IP ;
 
 var app = express();
 
+
+async function monitor() {
+	var monitor_child = fork('./child_monitor.js');
+	if(monitor_child != null) {
+		logger.info("[APILAYER][main] API Layer, monitor started with PID " + monitor_child.pid);
+
+		monitor_child.on('close', () => {
+			logger.info("[APILAYER][main] API Layer, monitor close event ");
+			monitor();
+		})
+
+		monitor_child.on('exit', () => {
+			logger.info("[APILAYER][main] API Layer, monitor exit event ");
+			//monitor();
+		})
+	}
+	else {
+		logger.error("[APILAYER][main] API Layer, error starting monitor");
+	}
+}
+monitor();
 
 mongoo.instance().init().then(() => {
 	let server = app.listen(port, ip, function () {

@@ -178,3 +178,15 @@ exports.getStatsTenantMonthly = async function(tenantid) {
     ]).exec();
 }
 
+
+// retorna info de los últimos jobs ejecutados dado el intervalo de entrada
+//
+exports.getJobsinInterval = async function (tenantid, init, end) {
+
+    let StatsjobData = mongoo.instance().Models(tenantid).StatsjobDataSchema;
+    return StatsjobData.find(
+        { "tenant_id": tenantid,
+            "last_time": {$gte: init, $lte: end }
+     }).exec();
+} 
+
