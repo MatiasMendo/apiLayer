@@ -206,7 +206,7 @@ exports.getJobsOlderThan = async function (tenantid, date) {
 exports.remove_job = async function (tenant_id, _job_id) {
     let StatsjobData = mongoo.instance().Models(tenant_id).StatsjobDataSchema;
     StatsjobData.deleteMany({job_id: _job_id}).exec().then((o) => {
-        logger.info("[APILAYER][removestatsjob] Removed: " + o.deletedCount +" objects");
+        logger.info("[APILAYER][removestatsjob] Tenant: "+ tenant_id +", job: "+ _job_id + ", removed: " + o.deletedCount +" objects");
     });
 }
 

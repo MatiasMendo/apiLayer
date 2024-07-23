@@ -63,6 +63,10 @@ var StatsconfigDataSchema = new Schema({
         type: Schema.Types.Number,
         required: true
     },
+    data_retention: {
+        type: Schema.Types.Number,
+        required: true
+    },
     active: {
         type: Schema.Types.Boolean,
         required: true

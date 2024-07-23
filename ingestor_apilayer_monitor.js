@@ -7,7 +7,7 @@ const dotenv = require ('dotenv');
 
 dotenv.config();
 
-const default_retention = 90; //retención ed data máximo 90 días
+const default_retention = 60; //retención ed data máximo 90 días
 
 // Extrea indicadores que se ejecutan una vez al día
 exports.tenant = async function(tenant) {
@@ -106,23 +106,24 @@ exports.jobs = async function() {
 exports.remove_oldjobs = async function() {
 
     try{
-        logger.info("[APILAYER][monitor] Removing oldjobs process started");
+        logger.info("[APILAYER][removeoldjobs] Remove oldjobs process started");
         let mytenants = await config.getAllTenants();
         for(let idx = 0; idx < mytenants.length; idx++) {
             let tenant = mytenants[idx];
             let cfg = await config.getConfigurationObject(tenant);
-            let retention = cfg[0].retention;
+            let retention = cfg[0].data_retention;
             if(retention == null) retention = default_retention;
             let init = new Date();
             init.setHours(init.getHours() - (24 * retention));
+            logger.info("[APILAYER][removeoldjobs] Checking tenant: " + tenant + " for older jobs than " + retention + " days");
             let jobs = await stats.getJobsOlderThan(tenant, init);
             jobs.forEach( (el) => {
-                logger.info("[APILAYER][monitor] Removing job " + el.job_id + ", tenant " + tenant)
+                logger.info("[APILAYER][removeoldjobs] Tenant: " + tenant + ", job: " + el.job_id + ", removing");
                 apijobs.remove_job(tenant, el.job_id);
                 stats.remove_job(tenant, el.job_id);
             })
         }
-        logger.info("[APILAYER][monitor] Removing oldjobs process end");
+        logger.info("[APILAYER][removeoldjobs] Remove oldjobs process end");
     }
     catch(e){
         logger.error("[APILAYER][monitor] Error oldjobs " + e)
