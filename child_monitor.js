@@ -12,6 +12,7 @@ mongoo.instance().init().then(async () => {
     cron.schedule('0 0 * * *', monitor.tenant);
     await monitor.jobs();
     cron.schedule('0 0-23 * * *', monitor.jobs);
+    cron.schedule('0 17 * * 0', monitor.remove_oldjobs);
 	})
 .catch((e) => {
 	logger.error("[APILAYER][monitor] Error " + e)

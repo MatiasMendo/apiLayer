@@ -188,5 +188,25 @@ exports.getJobsinInterval = async function (tenantid, init, end) {
         { "tenant_id": tenantid,
             "last_time": {$gte: init, $lte: end }
      }).exec();
+}
+
+// retorna info de los últimos jobs ejecutados dado el intervalo de entrada
+//
+exports.getJobsOlderThan = async function (tenantid, date) {
+
+    let StatsjobData = mongoo.instance().Models(tenantid).StatsjobDataSchema;
+    return StatsjobData.find(
+        { "tenant_id": tenantid,
+            "last_time": {$lte: date }
+     }).exec();
 } 
+
+
+//borrar las estadística del job
+exports.remove_job = async function (tenant_id, _job_id) {
+    let StatsjobData = mongoo.instance().Models(tenant_id).StatsjobDataSchema;
+    StatsjobData.deleteMany({job_id: _job_id}).exec().then((o) => {
+        logger.info("[APILAYER][removestatsjob] Removed: " + o.deletedCount +" objects");
+    });
+}
 

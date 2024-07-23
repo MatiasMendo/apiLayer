@@ -200,4 +200,12 @@ exports.get_job = async function (body, res) {
     })
 }
 
+
+exports.remove_job = async function (tenant_id, _job_id) {
+    let RecordingData = mongoo.instance().Models(tenant_id).RecordingDataSchema;
+    RecordingData.deleteMany({job_id: _job_id}).exec().then((o) => {
+        logger.info("[APILAYER][removejob] job " + _job_id +", tenant "+ tenant_id +", Removed: " + o.deletedCount +" objects");
+    });
+}
+
      
