@@ -19,7 +19,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"audios\": [\r\n\t    {\r\n\t\t    \"source\": \"/mnt/test/source/01_123456789.wav\",\r\n\t\t    \"duration\": 60,\r\n\t\t    \"metadata\": \"{\\\"my_metadata_01\\\"}\" \r\n\t},\r\n\t{\r\n\t\t\"source\": \"/mnt/test/source/02_123456789.wav\",\r\n\t\t\"duration\": 98,\r\n\t\t\"metadata\": \"{\\\"my_metadata_02\\\"}\"\r\n\t}\r\n    ]\r\n}",
+							"raw": "{\r\n    \"tenant_id\": {{tenant_id}},\r\n    \"audios\": [\r\n\t    {\r\n\t\t    \"source\": \"/mnt/test/source/01_123456789.wav\",\r\n\t\t    \"duration\": 60,\r\n\t\t    \"metadata\": \"{\\\"my_metadata_01\\\"}\" \r\n\t},\r\n\t{\r\n\t\t\"source\": \"/mnt/test/source/02_123456789.wav\",\r\n\t\t\"duration\": 98,\r\n\t\t\"metadata\": \"{\\\"my_metadata_02\\\"}\"\r\n\t},\r\n\t{\r\n\t\t\"source\": \"/mnt/test/source/03_123456789.wav\",\r\n\t\t\"duration\": 98,\r\n\t\t\"metadata\": \"{\\\"my_metadata_02\\\"}\"\r\n\t},\r\n\t{\r\n\t\t\"source\": \"/mnt/test/source/04_123456789.wav\",\r\n\t\t\"duration\": 98,\r\n\t\t\"metadata\": \"{\\\"my_metadata_02\\\"}\"\r\n\t},\r\n\t{\r\n\t\t\"source\": \"/mnt/test/source/05_123456789.wav\",\r\n\t\t\"duration\": 98,\r\n\t\t\"metadata\": \"{\\\"my_metadata_02\\\"}\"\r\n\t}\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
