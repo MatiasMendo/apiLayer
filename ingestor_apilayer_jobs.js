@@ -29,7 +29,7 @@ function check_andbuild(body, newjob, maxelem) {
     else if ((undefined == body.job_id) || (typeof body.job_id != "string")) {
         logger.info("[APILAYER][new] Error in parameter job_id");
         throw Error("Error in parameter job_id");
-        return false;
+        //return false;
     }
     else {
         myjob_id = body.job_id;
@@ -72,20 +72,29 @@ async function insert_job(body, res, newjob) {
         mydocuments = check_andbuild(body, newjob, max_files_newjob);
     }
     catch (e) {
-        logger.info('[APILAYER][new] Bad body, returning code 400 ' + e.message)
+        logger.info('[APILAYER][new] Bad body, returning code 400 ' + e)
         res.status(400).send(e.message)
         return;
     }
     
-    if (false == mydocuments) {
-        logger.debug('[APILAYER][new] Bad body, returning code 400')
-        res.status(400).send()
-        return;
-    }
-
     if (0 == mydocuments.length) {
-        logger.debug('[APILAYER][new] audios array is empty, returning code 400')
-        res.status(400).send()
+        if(newjob == false) { //
+            logger.debug('[APILAYER][new] audios array is empty appending data to job, returning code 400')
+            res.status(400).send()
+        }
+        else { //solo para nuevos jobs, se puede crear vacío
+            logger.debug('[APILAYER][new] audios array is empty, returning an empty job');
+            let mytenant_id = body.tenant_id;
+            let myjob_id = uuidv4();
+
+            res.send({
+                'tenant_id': mytenant_id,
+                'job_id': myjob_id,
+                'total': 0
+            });
+
+            statsjob.initjob(mytenant_id, myjob_id, new Date(), 0);
+        }
         return;
     }
 
@@ -96,7 +105,7 @@ async function insert_job(body, res, newjob) {
     let RecordingData = mongoo.instance().Models(mytenant_id).RecordingDataSchema;
     RecordingData.insertMany(mydocuments, { lean: false, throwOnValidationError: true })
         .then((docs) => {
-            logger.debug("[APILAYER][new] Inserted " + docs.length + "documents to DB");
+            logger.debug("[APILAYER][new] Inserted " + docs.length + " documents to DB");
             res.send({
                 'tenant_id': mytenant_id,
                 'job_id': myjob_id,
