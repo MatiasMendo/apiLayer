@@ -3,7 +3,7 @@ const logger = require('./utils/Logger.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
 const statsjob = require('./ingestor_apilayer_statsjob.js');
 
-const return_limit = 50;
+const return_limit = 48;
 
 
 exports.get = async function (module, body, res) {
