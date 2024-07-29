@@ -4,10 +4,15 @@ const apijobs = require('./ingestor_apilayer_jobs.js');
 const config = require('./ingestor_apilayer_config.js');
 const logger = require('./utils/Logger.js');
 const dotenv = require ('dotenv');
+const cloudwatchMetrics = require('cloudwatch-metrics');
 
 dotenv.config();
 
 const default_retention = 60; //retención ed data máximo 90 días
+cloudwatchMetrics.initialize({
+    region: 'us-east-1'
+});
+
 
 // Extrea indicadores que se ejecutan una vez al día
 exports.tenant = async function(tenant) {
@@ -28,6 +33,24 @@ exports.tenant = async function(tenant) {
             hours = (hours < 10) ? "0" + hours : hours;
             minutes = (minutes < 10) ? "0" + minutes : minutes;
             seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+            //envía registro a cloudwatch
+            var myMetric = new cloudwatchMetrics.Metric('VoC CORE', 'Count', [{
+                Name: 'Ingestor',
+                Value: tenant
+                }], 
+                {                 
+                    sendCallback: (err) => {
+                        if (!err) return;
+                        logger.error("Error creating cloudwatch metrics " + err);
+
+                    }
+                }
+            );
+            
+            myMetric.put(hours, 'HTM', "Count");
+            //
+            //logea registro
             logger.info("[APILAYER][tenant monitor] {'tenant': '"+ tenant + "', 'uploaded': '"+ hours +":"+ minutes + ":" + seconds +"'}")
             //
             //
@@ -91,7 +114,27 @@ exports.jobs = async function() {
                 let mtotal = (myjobsdata.total <= jobsdata[tenant].total)? (jobsdata[tenant].total - myjobsdata.total) : jobsdata[tenant].total;
                 let mo_finished = (myjobsdata.o_finished <= jobsdata[tenant].o_finished)? (jobsdata[tenant].o_finished - myjobsdata.o_finished) : jobsdata[tenant].o_finished;
                 let ms_finished = (myjobsdata.s_finished <= jobsdata[tenant].s_finished)? (jobsdata[tenant].s_finished - myjobsdata.s_finished) : jobsdata[tenant].s_finished;
+                let ms_error = (myjobsdata.s_error <= jobsdata[tenant].s_error)? (jobsdata[tenant].s_error - myjobsdata.s_error) : jobsdata[tenant].s_error;
+
+                //envía registro a cloudwatch
+                var myMetric = new cloudwatchMetrics.Metric('VoC CORE', 'Count', [{
+                    Name: 'Ingestor',
+                    Value: tenant
+                    }], 
+                    {                 
+                        sendCallback: (err) => {
+                            if (!err) return;
+                            logger.error("Error creating cloudwatch metrics " + err);
+
+                        }
+                    }
+                );
                 
+                myMetric.put(ms_finished, 'procesado', "Count");
+                myMetric.put(ms_error, 'error', "Count");
+                myMetric.put(mo_finished, 'objetos', "Count");
+                //
+                //logea registro
                 logger.info("[APILAYER][jobs monitor] {'tenant': '"+ tenant + "', 'input': "+ mtotal +", 'uploaded': "+ mo_finished +", 'seconds': "+ ms_finished +"}")
             }
 
