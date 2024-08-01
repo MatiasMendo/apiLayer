@@ -94,6 +94,16 @@ app.get(baseroute + '/job', function (req, res) {
 	}
 });
 
+app.get(baseroute + '/verify', function (req, res) {
+	logger.debug('[APILAYER][main] API get - verify')
+	if (Object.keys(req.query).length > 0) {//axios
+		jobs.verify_job(JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		jobs.verify_job(req.body, res);
+	}
+});
+
 //API para estad�sticas
 app.get(baseroute + '/stats/job', function (req, res) {
 	logger.debug('[APILAYER][main] API new - statsjob');
@@ -133,6 +143,12 @@ app.get(baseroute + '/configuration', function (req, res) {
 // procesa todos los endpoint de cambio de estado
 // y extracción de audios a procesar
 //
+
+app.patch(baseroute + '/verificator/state', function (req, res) {
+	logger.debug('[APILAYER][main] API state verificator')
+
+	status.update('verificator', req.body, res)
+});
 
 app.patch(baseroute + '/input/state', function (req, res) {
 	logger.debug('[APILAYER][main] API state input')

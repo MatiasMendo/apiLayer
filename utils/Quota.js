@@ -38,7 +38,7 @@ class Quota {
         if(null == this.tmonthlyusage) {
             try {
                 let monthlystats = await stats.getStatsTenantMonthly(this.mytenantid);
-                this.tmonthlyusage =  monthlystats.finished;
+                this.tmonthlyusage =  monthlystats[0].finished;
             }
             catch(e) {
                 throw(e);

@@ -27,6 +27,10 @@ var FilesDataSchema = new Schema({
         type: Schema.Types.Number,
         required: true
     },
+    verified: {
+        type: Schema.Types.Number,
+        required: true
+    },
     processing: {
         type: Schema.Types.Number,
         required: true

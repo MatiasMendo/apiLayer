@@ -29,6 +29,7 @@ exports.update = async function (module, body, res) {
 	let update = {};
 	//actualiza el estado en que va el procesamiento del archivo
 	switch (module) {
+		case "verificator":
 		case "input":
 		case "converter":
 		case "zipper":
@@ -36,12 +37,23 @@ exports.update = async function (module, body, res) {
 			update["stage." + module] = body.state;
 			break;
 	}
-	//si 
+	//este caso es particular y es cuando termina el proceso del audio
+	// termina con la subida al repositorio 
 	if (((body.state == "FINISHED") && (module == "uploader")) ||
 		(body.state == "BAD_FILE") ||
 		(body.state == "ERROR")) {
 		update["status"] = body.state;
 		update["finished_time"] = new Date();
+	}
+
+	//este otro caso ocurre cuando el microservicio verificator termina su proceso
+	// y se le permite hacer un update de algunos campos del registro del audio
+	// puede modificar el source
+	if((module == "verificator") && (body.state == "FINISHED")) {
+		if(typeof body.source == "string") {
+			//hace update del campo source del registro
+			update["source"] = body.source;
+		}
 	}
 
 	if (0 != update.size ) {

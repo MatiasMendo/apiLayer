@@ -2,6 +2,7 @@ const logger = require('./utils/Logger.js');
 const quota = require('./utils/Quota.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
 const statsjob = require('./ingestor_apilayer_statsjob.js');
+const config = require('./ingestor_apilayer_config.js');
 const { v4: uuidv4 } = require('uuid');
 
 const max_files_newjob = 75;
@@ -47,11 +48,20 @@ function check_andbuild(body, newjob, maxelem) {
         obj.file_id = uuidv4();
         obj.type = "AUDIO";
         obj.stage = {};
+        obj.stage.verificator = "IDLE";
         obj.stage.input = "IDLE";
         obj.stage.converter = "IDLE";
         obj.stage.zipper = "IDLE";
         obj.stage.uploader = "IDLE";
+
         obj.status = "IDLE";
+
+        if(o.customdata != undefined) {
+            obj.customdata = o.customdata;
+        }
+        else {
+            obj.customdata = "";
+        }
 
         audios_array.push(obj);
         idx++;
@@ -134,12 +144,33 @@ exports.new_job = async function (body, res) {
 }
 
 exports.append_job = async function (body, res) {
-    insert_job(body, res, false);
+    if ((undefined == body.tenant_id) || (typeof body.tenant_id != "string")) {
+        logger.info("[APILAYER][append] Error in parameter tenant_id");
+        res.status(400).send("tenant_id empty");
+        return;
+    }
+    if ((undefined == body.job_id) || (typeof body.job_id != "string")) {
+        logger.info("[APILAYER][append] Error in parameter job_id");
+        res.status(400).send("job_id empty");
+        return;
+    }
+
+    statsjob.getStatsObject(body.tenant_id, body.job_id).then((obj)=>{
+        if(obj != null) {
+            insert_job(body, res, false);
+        } 
+        else {
+            logger.error("[APILAYER][append] Error appending, no exist job_id: " + body.job_id);
+            res.status(400).send("no exist job_id");
+        }
+    });
+
+    
 }
 
 
 //extrae registros desde mongodb. Gatillado por microservicios input 
-exports.get_job = async function (body, res) {
+async function get_myjob(body, res, uservice) {
 
     if ((undefined == body.tenant_id) || (typeof body.tenant_id != "string")) {
         logger.info("[APILAYER][getjob] Error in parameter tenant_id");
@@ -153,10 +184,51 @@ exports.get_job = async function (body, res) {
         return;
     }
 
+    //se descubre quien es la primera etapa del pipeline
+    let firststage = 'input';
+    if('verificator' in (await config.getConfigurationObject(body.tenant_id))[0].microservices) {
+        firststage = 'verificator';
+    }
+
+    //si no está verificator configurado y viene desde ese uservice, se rechaza
+    if ((uservice == 'verificator') && (firststage == 'input')) {
+        logger.info("[APILAYER][getjob] Invalid verificator request. Verificator is not the first stage in pipeline, check configuration");
+        res.status(400).send();
+        return;
+    }
+
+    // Setea la query a realizar a los rgistros de acuerdo a la configuración y el uservicio q 
+    // realiza la consulta
+    //
+    let myquery = {};
+    if(uservice == 'input') { //en caso de servicio INPUT y no hay verificator
+        if(firststage == 'input') {
+            myquery = {
+                "status": "IDLE",
+                "stage.verificator": "IDLE",
+                "stage.input": "IDLE"
+            }
+        }
+        else if(firststage == 'verificator') {
+            myquery = {
+                "status": "VERIFY",
+                "stage.verificator": "FINISHED",
+                "stage.input": "IDLE"
+            }
+        }
+    }
+    else if (uservice == 'verificator') {//en caso de servicio verifificator es el primero que consume
+        myquery = {
+            "status": "IDLE",
+            "stage.verificator": "IDLE",
+            "stage.input": "IDLE"
+        }
+    }
+    
     let qt = quota.getObject(body.tenant_id); //chequeará quota
     const overhead = 5;
     let RecordingData = mongoo.instance().Models(body.tenant_id).RecordingDataSchema;
-    RecordingData.find({ status: 'IDLE' }).limit(overhead * body.limit).exec().then(async (query) => {
+    RecordingData.find(myquery).limit(overhead * body.limit).exec().then(async (query) => {
         let documents = [];
         let idx = 0;
         if (null != query) {
@@ -171,33 +243,60 @@ exports.get_job = async function (body, res) {
                     logger.info("[APILAYER][getjob] Error getting quota: " + e);
                 }
 
-                if(quotareached == false) { //entra si quota no está alcanzada
-                    documents[idx] = {
-                        "tenant_id": doc.tenant_id,
-                        "job_id": doc.job_id,
-                        "source": doc.source,
-                        "duration": doc.duration,
-                        "file_id": doc.file_id,
-                        "type": doc.type
-                    };
-                    idx++;
-                    //update el documento a processing
-                    doc.status = "PROCESSING";
+                if(quotareached == true) { //entra si quota está alcanzada
+                    doc.status = "QUOTA_EXCEEDED";
                     doc.input_time = new Date();
-                    doc.save();
-                
-                    statsjob.retrieved(doc.tenant_id, doc.job_id, false);
-                }
-                else if(quotareached == true) { //entra si quota está alcanzada
-                    doc.status = "QUOTA_EXECEEDED";
-                    doc.input_time = new Date();
-                    doc.save();
-
+                    await doc.save();
                     statsjob.retrieved(doc.tenant_id, doc.job_id, true);
+                }
+                else if(quotareached == false) { //entra si quota no está alcanzada
+                    
+                    if(uservice == 'input') {
+                        documents[idx] = {
+                            "tenant_id": doc.tenant_id,
+                            "job_id": doc.job_id,
+                            "source": doc.source,
+                            "duration": doc.duration,
+                            "file_id": doc.file_id,
+                            "type": doc.type
+                        };
+                        //actualiza verificator a FINISHED
+                        if(firststage == 'input') { // si el primer uservice es input
+                            doc.status = "PROCESSING";
+                            doc.stage.verificator = "FINISHED";
+                            doc.input_time = new Date();
+                            await doc.save();
+                            await statsjob.retrieved(doc.tenant_id, doc.job_id, false);
+                        }
+                        else {
+                            doc.status = "PROCESSING";
+                            await doc.save();
+                        }
+                    }
+                    else if(uservice == 'verificator'){
+                        documents[idx] = {
+                            "tenant_id": doc.tenant_id,
+                            "job_id": doc.job_id,
+                            "source": doc.source,
+                            "duration": doc.duration,
+                            "file_id": doc.file_id,
+                            "customdata": doc.customdata,
+                            "metadata": doc.metadata,
+                            "type": doc.type
+                        };
+
+                        doc.status = "VERIFY";
+                        doc.input_time = new Date();
+                        await doc.save();
+                        await statsjob.retrieved(doc.tenant_id, doc.job_id, false);
+                    }
+
+                    
                 }
                 else {
                     logger.info("[APILAYER][getjob] Error, invalid quotareached: " + quotareached);
                 }
+                idx++;
             }
         } 
             // Envia los audios
@@ -207,6 +306,17 @@ exports.get_job = async function (body, res) {
         })
 
     })
+}
+
+
+//gatillado por algún microservicio INPUT
+exports.get_job = async function (body, res) {
+    await get_myjob(body, res, 'input');
+}
+
+//gatillado por algún microservicio verificator
+exports.verify_job = async function (body, res) {
+    await get_myjob(body, res, 'verificator');
 }
 
 

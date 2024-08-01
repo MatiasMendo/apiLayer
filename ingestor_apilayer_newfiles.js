@@ -21,6 +21,7 @@ exports.get = async function (module, body, res) {
 		case "converter":
             query = {
                 "status": "PROCESSING",
+                "stage.verificator": "FINISHED",
                 "stage.input": "FINISHED",
                 "stage.converter": "IDLE",
                 "stage.zipper": "IDLE",
@@ -30,6 +31,7 @@ exports.get = async function (module, body, res) {
 		case "zipper":
             query = {
                 "status": "PROCESSING",
+                "stage.verificator": "FINISHED",
                 "stage.input": "FINISHED",
                 "stage.converter": "FINISHED",
                 "stage.zipper": "IDLE",
@@ -39,6 +41,7 @@ exports.get = async function (module, body, res) {
 		case "uploader":
 			query = {
                 "status": "PROCESSING",
+                "stage.verificator": "FINISHED",
                 "stage.input": "FINISHED",
                 "stage.converter": "FINISHED",
                 "stage.zipper": "FINISHED",
