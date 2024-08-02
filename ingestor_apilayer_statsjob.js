@@ -1,5 +1,6 @@
 const logger = require('./utils/Logger.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
+const config = require('./ingestor_apilayer_config.js');
 
 //inserta nuevo job e inicializa contadores
 exports.initjob = async function (otenant_id, ojob_id, ojob_time, ototal) {
@@ -12,7 +13,6 @@ exports.initjob = async function (otenant_id, ojob_id, ojob_time, ototal) {
             total: ototal,
             idle: ototal,
             retrieved: 0,
-            verified: 0,
             processing: 0,
             finished: 0,
             error:0,
@@ -81,19 +81,15 @@ exports.retrieved = async function (otenant_id, ojob_id, quotaxceeded) {
 exports.updatestate = async function (otenant_id, ojob_id, omodule, ostate, oduration) {
 
     let update = {};
-    if (("input" == omodule)  && ("STARTING" == ostate)) {
+    if ((omodule == await config.getFirstuService(otenant_id)) && ("STARTING" == ostate)) {
         update.$inc = {};
         update.$inc['files.processing'] = 1;
     }
-    else if (("uploader" == omodule) && ("FINISHED" == ostate)) {
+    else if ((omodule == await config.getLastuService(otenant_id)) && ("FINISHED" == ostate)) {
         update.$inc = {};
         update.$inc['files.finished'] = 1;
         update.$inc['files.processing'] = -1;
         update.$inc['seconds.finished'] = oduration;
-    }
-    else if(("verificator" == omodule) && ("FINISHED" == ostate)) {
-        update.$inc = {};
-        update.$inc['files.verified'] = 1;
     }
     else if ((ostate == "ERROR") || (ostate == "BAD_FILE")) {
         update.$inc = {};

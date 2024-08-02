@@ -3,6 +3,7 @@ const quota = require('./utils/Quota.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
 const statsjob = require('./ingestor_apilayer_statsjob.js');
 const config = require('./ingestor_apilayer_config.js');
+const newfiles = require('./ingestor_apilayer_newfiles.js');
 const { v4: uuidv4 } = require('uuid');
 
 const max_files_newjob = 75;
@@ -168,8 +169,9 @@ exports.append_job = async function (body, res) {
     
 }
 
-
+//
 //extrae registros desde mongodb. Gatillado por microservicios input 
+//
 async function get_myjob(body, res, uservice) {
 
     if ((undefined == body.tenant_id) || (typeof body.tenant_id != "string")) {
@@ -184,47 +186,13 @@ async function get_myjob(body, res, uservice) {
         return;
     }
 
-    //se descubre quien es la primera etapa del pipeline
-    let firststage = 'input';
-    if('verificator' in (await config.getConfigurationObject(body.tenant_id))[0].microservices) {
-        firststage = 'verificator';
-    }
-
-    //si no está verificator configurado y viene desde ese uservice, se rechaza
-    if ((uservice == 'verificator') && (firststage == 'input')) {
-        logger.info("[APILAYER][getjob] Invalid verificator request. Verificator is not the first stage in pipeline, check configuration");
-        res.status(400).send();
-        return;
-    }
-
-    // Setea la query a realizar a los rgistros de acuerdo a la configuración y el uservicio q 
+     // Setea la query a realizar a los rgistros de acuerdo a la configuración y el uservicio q 
     // realiza la consulta
     //
-    let myquery = {};
-    if(uservice == 'input') { //en caso de servicio INPUT y no hay verificator
-        if(firststage == 'input') {
-            myquery = {
-                "status": "IDLE",
-                "stage.verificator": "IDLE",
-                "stage.input": "IDLE"
-            }
-        }
-        else if(firststage == 'verificator') {
-            myquery = {
-                "status": "VERIFY",
-                "stage.verificator": "FINISHED",
-                "stage.input": "IDLE"
-            }
-        }
-    }
-    else if (uservice == 'verificator') {//en caso de servicio verifificator es el primero que consume
-        myquery = {
-            "status": "IDLE",
-            "stage.verificator": "IDLE",
-            "stage.input": "IDLE"
-        }
-    }
-    
+    let myquery = {
+        "status": "IDLE"
+    };
+        
     let qt = quota.getObject(body.tenant_id); //chequeará quota
     const overhead = 5;
     let RecordingData = mongoo.instance().Models(body.tenant_id).RecordingDataSchema;
@@ -260,18 +228,10 @@ async function get_myjob(body, res, uservice) {
                             "file_id": doc.file_id,
                             "type": doc.type
                         };
-                        //actualiza verificator a FINISHED
-                        if(firststage == 'input') { // si el primer uservice es input
-                            doc.status = "PROCESSING";
-                            doc.stage.verificator = "FINISHED";
-                            doc.input_time = new Date();
-                            await doc.save();
-                            await statsjob.retrieved(doc.tenant_id, doc.job_id, false);
-                        }
-                        else {
-                            doc.status = "PROCESSING";
-                            await doc.save();
-                        }
+
+                        //INPUT fuerza stage verificator a terminado
+                        doc.stage.verificator = "FINISHED";
+                        
                     }
                     else if(uservice == 'verificator'){
                         documents[idx] = {
@@ -284,14 +244,13 @@ async function get_myjob(body, res, uservice) {
                             "metadata": doc.metadata,
                             "type": doc.type
                         };
-
-                        doc.status = "VERIFY";
-                        doc.input_time = new Date();
-                        await doc.save();
-                        await statsjob.retrieved(doc.tenant_id, doc.job_id, false);
                     }
 
-                    
+                    doc.status = "PROCESSING";
+                    doc.input_time = new Date();
+                    await doc.save();
+                    await statsjob.retrieved(doc.tenant_id, doc.job_id, false);
+
                 }
                 else {
                     logger.info("[APILAYER][getjob] Error, invalid quotareached: " + quotareached);
@@ -311,12 +270,48 @@ async function get_myjob(body, res, uservice) {
 
 //gatillado por algún microservicio INPUT
 exports.get_job = async function (body, res) {
-    await get_myjob(body, res, 'input');
+
+    if ((undefined == body.tenant_id) || (typeof body.tenant_id != "string")) {
+        logger.info("[APILAYER][getjob] Error in parameter tenant_id");
+        res.status(400).send();
+        return;
+    }
+
+    try {
+        if('input' == await config.getFirstuService(body.tenant_id)) {
+            await get_myjob(body, res, 'input');
+        }
+        else { //si no es el primer uservice se comporta como cualquier otro
+            await newfiles.get('input', body, res);
+        }
+    }
+    catch(e) {
+        logger.error("[APILAYER][getjob] Error in get_job");
+        res.status(500).send();
+    }
 }
+
 
 //gatillado por algún microservicio verificator
 exports.verify_job = async function (body, res) {
-    await get_myjob(body, res, 'verificator');
+    if ((undefined == body.tenant_id) || (typeof body.tenant_id != "string")) {
+        logger.info("[APILAYER][verifyjob] Error in parameter tenant_id");
+        res.status(400).send();
+        return;
+    }
+
+    try {
+        if('verificator' == await config.getFirstuService(body.tenant_id)) {
+            await get_myjob(body, res, 'verificator');
+        }
+        else { //si no es el primer uservice rtorna un 4XX
+            res.status(400).send();
+        }
+    }
+    catch(e) {
+        logger.error("[APILAYER][verifyjob] Error in get_job");
+        res.status(500).send();
+    }
 }
 
 

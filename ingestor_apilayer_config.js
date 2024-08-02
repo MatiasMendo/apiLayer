@@ -1,49 +1,7 @@
 const logger = require('./utils/Logger.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
 
-/** Config template 
- * 
- * 
- {
-"tenant_id": "my_tenant_id",
-"version": 0,
-"active":true,
-"description": "my test tenant",
-"folder_base": "/home/tenant",
-"url": {
-  "addon_downloader": "http://127.0.0.1/downloader"
-  },
-"microservices": {
-  "input" : {
-    "name": "input",
-    "previous": "",
-    "cron": "* *",
-    "bucket": ""
-    },
-    "converter" : {
-    "name": "converter",
-    "previous": "addon_downloader",
-    "cron": "* *",
-    "bucket": ""
-    },
-    "zipper" : {
-    "name": "zipper",
-    "previous": "converter",
-    "cron": "* *",
-    "bucket": ""
-    },
-    "uploader" : {
-    "name": "uploader",
-    "previous": "zipper",
-    "cron": "* *",
-    "bucket": "s3://pruebitas"
-    }
-  }
 
-}
- * 
- * 
- */
 exports.getConfigurationObject = async function(tenantid_) {
   return getConfigurationObjectQuery(tenantid_);
 }
@@ -55,6 +13,9 @@ async function getConfigurationObjectQuery(tenantid) {
 }
 
 
+// Esta función se utiliza para enviar la configuración
+// via endpoint
+//
 exports.get = async function (body, res) {
 
     if ((undefined == body.tenant_id) || (typeof body.tenant_id != "string")) {
@@ -76,7 +37,8 @@ exports.get = async function (body, res) {
     })
 }
 
-
+//retorna un listado de tenants_id
+//
 exports.getAllTenants = async function() {
   let ConfigData = mongoo.instance().ModelConfig();
   try {
@@ -103,5 +65,41 @@ exports.getAllTenants = async function() {
   }
  
 }
+
+
+//
+//retorna el primer microservicio
+//
+exports.getFirstuService = async function (tenantid){
+  try {
+    let first = 'input';
+
+    let config = await getConfigurationObjectQuery(tenantid);
+    if('verificator' in config[0].microservices) {
+      first = 'verificator'
+    }
+
+    return first;
+
+  } catch(e) {
+    logger.error("[APILAYER][getFirstuService] : " + e);
+  }
+}
+
+//
+//retorna el último microservicio
+//
+exports.getLastuService = async function (tenantid){
+
+    let last = 'uploader';
+
+    //aquí se pone lógica para poder devolver el último
+    //por mientras siempre es uploader el último
+
+    return last;
+
+}
+
+
 
      
