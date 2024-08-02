@@ -1,11 +1,5 @@
 const logger = require('./utils/Logger.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
-var mongoose = require('mongoose');
-var cachegoose = require('recachegoose');
-
-cachegoose(mongoose, {
-  engine: 'memory'
-});
 
 
 exports.getConfigurationObject = async function(tenantid_) {
