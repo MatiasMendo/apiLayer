@@ -81,11 +81,11 @@ exports.retrieved = async function (otenant_id, ojob_id, quotaxceeded) {
 exports.updatestate = async function (otenant_id, ojob_id, omodule, ostate, oduration) {
 
     let update = {};
-    if ((omodule == await config.getFirstuService(otenant_id)) && ("STARTING" == ostate)) {
+    if (("STARTING" == ostate) && (omodule == await config.getFirstuService(otenant_id))  ) {
         update.$inc = {};
         update.$inc['files.processing'] = 1;
     }
-    else if ((omodule == await config.getLastuService(otenant_id)) && ("FINISHED" == ostate)) {
+    else if (("FINISHED" == ostate) && (omodule == await config.getLastuService(otenant_id))) {
         update.$inc = {};
         update.$inc['files.finished'] = 1;
         update.$inc['files.processing'] = -1;
@@ -104,7 +104,7 @@ exports.updatestate = async function (otenant_id, ojob_id, omodule, ostate, odur
     const StatsjobData = mongoo.instance().Models(otenant_id).StatsjobDataSchema;
     update.last_time = new Date();
 
-    StatsjobData.findOneAndUpdate({ "job_id": ojob_id }, update).exec().then((doc) => {
+    await StatsjobData.findOneAndUpdate({ "job_id": ojob_id }, update).exec().then((doc) => {
         if (null == doc) {
             logger.info("[APILAYER][updatestate-stats] Error in parameter job_id " + ojob_id);
         }

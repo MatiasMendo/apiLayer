@@ -61,12 +61,12 @@ exports.update = async function (module, body, res) {
 			"file_id": body.file_id
 		};
 
-		RecordingData.findOneAndUpdate(filter, update).exec().then((doc) => {
+		RecordingData.findOneAndUpdate(filter, update).exec().then(async (doc) => {
 			if (null == doc) {
 				logger.info("[APILAYER][status update] file_id " + body.file_id + " not found ");
 			}
 			else {
-				statsjob.updatestate(body.tenant_id, doc.job_id, module, body.state, doc.duration)
+				await statsjob.updatestate(body.tenant_id, doc.job_id, module, body.state, doc.duration)
 				logger.info("[APILAYER][status update] file_id " + body.file_id + ", updated stage " + module + " to " + body.state);
 			}
 			res.send();

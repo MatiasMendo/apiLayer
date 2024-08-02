@@ -15,6 +15,7 @@
     "log4js": "^6.9.1",
     "mongoose": "^8.3.3",
     "node-cron": "^3.0.3",
+    "recachegoose": "^11.0.0",
     "uuid": "^9.0.1"
   }
 }

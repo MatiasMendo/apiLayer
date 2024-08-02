@@ -1,5 +1,11 @@
 const logger = require('./utils/Logger.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
+var mongoose = require('mongoose');
+var cachegoose = require('recachegoose');
+
+cachegoose(mongoose, {
+  engine: 'memory'
+});
 
 
 exports.getConfigurationObject = async function(tenantid_) {
@@ -9,7 +15,7 @@ exports.getConfigurationObject = async function(tenantid_) {
 
 async function getConfigurationObjectQuery(tenantid) {
   let ConfigData = mongoo.instance().ModelConfig();
-  return ConfigData.find({ tenant_id: tenantid, active:true }).sort({version: -1}).limit(1).exec();
+  return ConfigData.find({ tenant_id: tenantid, active:true }).sort({version: -1}).limit(1).cache(15).exec();
 }
 
 
