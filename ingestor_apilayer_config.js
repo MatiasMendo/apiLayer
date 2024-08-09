@@ -42,22 +42,13 @@ exports.get = async function (body, res) {
 exports.getAllTenants = async function() {
   let ConfigData = mongoo.instance().ModelConfig();
   try {
-    let mbuckets = await ConfigData.aggregate([
-      { 
-        $match : {
-           active:true } },
-      { 
-        $bucketAuto : {
-          groupBy: "$tenant_id",
-          buckets: 100000
-        }
-      }
-    ]).exec();
-
     let toret = [];
-    mbuckets.forEach((b) => {
-      toret.push(b._id.min)
-    });
+    let docs = await ConfigData.find({ active:true }).cache(15).exec();
+    docs.forEach((d) => {
+      if(!toret.includes(d.tenant_id)) {
+        toret.push(d.tenant_id)
+      }
+    })
 
     return toret;
   } catch(e) {
