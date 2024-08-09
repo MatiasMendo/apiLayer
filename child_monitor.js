@@ -8,7 +8,7 @@ const cron = require('node-cron');
 dotenv.config();
 
 mongoo.instance().init().then(async () => {
-    cron.schedule('0 0 * * *', monitor.tenant);
+    cron.schedule('0 * * * *', monitor.tenant);
     await monitor.jobs();
     cron.schedule('0-59/5 * * * *', monitor.jobs);
     cron.schedule('0 17 * * 0', monitor.remove_oldjobs);
