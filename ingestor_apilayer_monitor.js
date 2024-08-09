@@ -24,7 +24,8 @@ exports.tenant = async function(tenant) {
             //
             //analiza los segundos subidos por tenant hasta este mes
             let s = await stats.getStatsTenantMonthly(tenant);
-            let seconds = s[0].finished;
+            let seconds = 0;
+            if(undefined != s[0].finished) seconds = s[0].finished;
             let hours = Math.floor(seconds / 3600);
             seconds %= 3600;
             let minutes = Math.floor(seconds / 60);
