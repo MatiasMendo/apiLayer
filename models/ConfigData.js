@@ -43,9 +43,13 @@ var MicroservicesDataSchema = new Schema({
  })
 
 */
-var UrlDataSchema = new Schema({
-    addon_downloader: {
-        type: Schema.Types.String,
+var QuotaDataSchema = new Schema({
+    job: {
+        type: Schema.Types.Number,
+        required: true
+    },
+    monthly: {
+        type: Schema.Types.Number,
         required: true
     }
 })
@@ -56,6 +60,10 @@ var StatsconfigDataSchema = new Schema({
         required: true
     },
     version: {
+        type: Schema.Types.Number,
+        required: true
+    },
+    data_retention: {
         type: Schema.Types.Number,
         required: true
     },
@@ -71,8 +79,8 @@ var StatsconfigDataSchema = new Schema({
         type: Schema.Types.String,
         required: true
     },
-    url: {
-        type: UrlDataSchema,
+    quota: {
+        type: QuotaDataSchema,
         required: true
     },
     microservices: {

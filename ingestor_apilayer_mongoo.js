@@ -5,6 +5,12 @@ var StatsjobDataSchema = require('./models/StatsjobData.js');
 var ConfigDataSchema = require('./models/ConfigData.js');
 const logger = require ("./utils/Logger.js");
 const dotenv = require("dotenv")
+var cachegoose = require('recachegoose');
+
+cachegoose(mongoose, {
+  engine: 'memory'
+});
+
 
 dotenv.config()
 

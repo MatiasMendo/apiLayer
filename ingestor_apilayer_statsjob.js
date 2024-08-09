@@ -1,5 +1,6 @@
 const logger = require('./utils/Logger.js');
 const mongoo = require('./ingestor_apilayer_mongoo.js');
+const config = require('./ingestor_apilayer_config.js');
 
 //inserta nuevo job e inicializa contadores
 exports.initjob = async function (otenant_id, ojob_id, ojob_time, ototal) {
@@ -14,7 +15,8 @@ exports.initjob = async function (otenant_id, ojob_id, ojob_time, ototal) {
             retrieved: 0,
             processing: 0,
             finished: 0,
-            error:0
+            error:0,
+            quota:0
         },
         seconds: {
             finished: 0,
@@ -26,6 +28,8 @@ exports.initjob = async function (otenant_id, ojob_id, ojob_time, ototal) {
     var sjddoc = new StatsjobData(document);
     sjddoc.save();
 }
+
+
 
 //agrega archivos a job existente, incrementa contadores iniciales
 exports.appendjob = async function (otenant_id, ojob_id, ototal) {
@@ -43,15 +47,27 @@ exports.appendjob = async function (otenant_id, ojob_id, ototal) {
     });
 }
 
+
+
 //se toman archivos, cambia de estado archivos de idle a retreived
-exports.retrieved = async function (otenant_id, ojob_id) {
+exports.retrieved = async function (otenant_id, ojob_id, quotaxceeded) {
 
     const StatsjobData = mongoo.instance().Models(otenant_id).StatsjobDataSchema;
-    StatsjobData.findOneAndUpdate({ "job_id": ojob_id }, {
-        $inc: {
+    let query = {
+        "files.idle": -1,
+        "files.retrieved": 1,
+    };
+
+    if (quotaxceeded) { //si la cuota está excedida, se agrega a estadísticas
+        query = {
             "files.idle": -1,
             "files.retrieved": 1,
-        }
+            "files.quota": 1
+        };
+    } 
+
+    await StatsjobData.findOneAndUpdate({ "job_id": ojob_id }, {
+        $inc: query
     }).exec().then((doc) => {
         if (null == doc) {
             logger.info("[APILAYER][appendjob-stats] Error in parameter job_id " + ojob_id);
@@ -59,17 +75,17 @@ exports.retrieved = async function (otenant_id, ojob_id) {
     });
 }
 
-//actualiza estados
+
+
+//actualiza estados para la ejecución de cada audio
 exports.updatestate = async function (otenant_id, ojob_id, omodule, ostate, oduration) {
 
-    console.log(omodule + " " + ostate)
-
     let update = {};
-    if (("input" == omodule) && ("STARTING" == ostate)) {
+    if (("STARTING" == ostate) && (omodule == await config.getFirstuService(otenant_id))  ) {
         update.$inc = {};
         update.$inc['files.processing'] = 1;
     }
-    else if (("uploader" == omodule) && ("FINISHED" == ostate)) {
+    else if (("FINISHED" == ostate) && (omodule == await config.getLastuService(otenant_id))) {
         update.$inc = {};
         update.$inc['files.finished'] = 1;
         update.$inc['files.processing'] = -1;
@@ -88,7 +104,7 @@ exports.updatestate = async function (otenant_id, ojob_id, omodule, ostate, odur
     const StatsjobData = mongoo.instance().Models(otenant_id).StatsjobDataSchema;
     update.last_time = new Date();
 
-    StatsjobData.findOneAndUpdate({ "job_id": ojob_id }, update).exec().then((doc) => {
+    await StatsjobData.findOneAndUpdate({ "job_id": ojob_id }, update).exec().then((doc) => {
         if (null == doc) {
             logger.info("[APILAYER][updatestate-stats] Error in parameter job_id " + ojob_id);
         }
@@ -96,8 +112,25 @@ exports.updatestate = async function (otenant_id, ojob_id, omodule, ostate, odur
 }
 
 
+//
+// retorna un objeto JSON con las estadísticas asociadas al job en consulta 
+//
+async function getStatsObjectQuery(tenantid, jobid) {
+    let StatsjobData = mongoo.instance().Models(tenantid).StatsjobDataSchema;
+    return StatsjobData.findOne({ "job_id": jobid }).exec();
+}
 
-//maneja respuestas a la API
+//
+// retorna un objeto JSON con las estadísticas asociadas al job en consulta 
+// como módulo
+//
+exports.getStatsObject = async function(tenantid, jobid) {
+    return getStatsObjectQuery(tenantid, jobid);
+}
+
+//
+//maneja respuestas a la API de consulta de estadísticas por job
+//
 exports.get_statsjob = async function (body, res) {
 
     if ((typeof body.tenant_id != "string") &&
@@ -107,8 +140,7 @@ exports.get_statsjob = async function (body, res) {
         return
     }
 
-    const StatsjobData = mongoo.instance().Models(body.tenant_id).StatsjobDataSchema;
-    StatsjobData.findOne({ "job_id": body.job_id }).exec().then((doc) => {
+    getStatsObjectQuery(body.tenant_id, body.job_id).then((doc) => {
         if (null == doc) {
             logger.info("[APILAYER][getstatsjob] Error in parameter job_id " + body.job_id);
             res.status(400).send();
@@ -127,8 +159,53 @@ exports.get_statsjob = async function (body, res) {
             }
         });
     });
+}
 
 
 
+// retorna un objeto JSON que contiene los segundos de audio
+// que han sido correctamente procesados para el tenant
+exports.getStatsTenantMonthly = async function(tenantid) {
+    let StatsjobData = mongoo.instance().Models(tenantid).StatsjobDataSchema;
+    let date = new Date();
+    let firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+    return StatsjobData.aggregate([
+        { $match: { $and: [ {"tenant_id": tenantid}, {"job_time": { $gte: firstDay, $lte: lastDay }}] }},
+        { $group: {_id: null, "finished" : { $sum: "$seconds.finished" } } }
+    ]).exec();
+}
+
+
+// retorna info de los últimos jobs ejecutados dado el intervalo de entrada
+//
+exports.getJobsinInterval = async function (tenantid, init, end) {
+
+    let StatsjobData = mongoo.instance().Models(tenantid).StatsjobDataSchema;
+    return StatsjobData.find(
+        { "tenant_id": tenantid,
+            "last_time": {$gte: init, $lte: end }
+     }).exec();
+}
+
+// retorna info de los últimos jobs ejecutados dado el intervalo de entrada
+//
+exports.getJobsOlderThan = async function (tenantid, date) {
+
+    let StatsjobData = mongoo.instance().Models(tenantid).StatsjobDataSchema;
+    return StatsjobData.find(
+        { "tenant_id": tenantid,
+            "last_time": {$lte: date }
+     }).exec();
+} 
+
+
+//borrar las estadística del job
+exports.remove_job = async function (tenant_id, _job_id) {
+    let StatsjobData = mongoo.instance().Models(tenant_id).StatsjobDataSchema;
+    StatsjobData.deleteMany({job_id: _job_id}).exec().then((o) => {
+        logger.info("[APILAYER][removestatsjob] Tenant: "+ tenant_id +", job: "+ _job_id + ", removed: " + o.deletedCount +" objects");
+    });
 }
 

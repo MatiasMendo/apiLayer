@@ -9,6 +9,9 @@ const mongoo = require('./ingestor_apilayer_mongoo.js');
 const newfiles = require('./ingestor_apilayer_newfiles.js');
 const logger = require('./utils/Logger.js');
 const dotenv = require ('dotenv');
+const { fork } = require('node:child_process');
+
+logger.info("[APILAYER][main] API Layer starting ");
 
 dotenv.config();
 const port = process.env.PORT ;
@@ -16,6 +19,27 @@ const ip = process.env.IP ;
 
 var app = express();
 
+
+async function monitor() {
+	var monitor_child = fork('./child_monitor.js');
+	if(monitor_child != null) {
+		logger.info("[APILAYER][main] API Layer, monitor started with PID " + monitor_child.pid);
+
+		monitor_child.on('close', () => {
+			logger.info("[APILAYER][main] API Layer, monitor close event ");
+			monitor();
+		})
+
+		monitor_child.on('exit', () => {
+			logger.info("[APILAYER][main] API Layer, monitor exit event ");
+			//monitor();
+		})
+	}
+	else {
+		logger.error("[APILAYER][main] API Layer, error starting monitor");
+	}
+}
+monitor();
 
 mongoo.instance().init().then(() => {
 	let server = app.listen(port, ip, function () {
@@ -70,6 +94,16 @@ app.get(baseroute + '/job', function (req, res) {
 	}
 });
 
+app.get(baseroute + '/verify', function (req, res) {
+	logger.debug('[APILAYER][main] API get - verify')
+	if (Object.keys(req.query).length > 0) {//axios
+		jobs.verify_job(JSON.parse(req.query.body), res);
+	}
+	else { //postman
+		jobs.verify_job(req.body, res);
+	}
+});
+
 //API para estad�sticas
 app.get(baseroute + '/stats/job', function (req, res) {
 	logger.debug('[APILAYER][main] API new - statsjob');
@@ -109,6 +143,12 @@ app.get(baseroute + '/configuration', function (req, res) {
 // procesa todos los endpoint de cambio de estado
 // y extracción de audios a procesar
 //
+
+app.patch(baseroute + '/verificator/state', function (req, res) {
+	logger.debug('[APILAYER][main] API state verificator')
+
+	status.update('verificator', req.body, res)
+});
 
 app.patch(baseroute + '/input/state', function (req, res) {
 	logger.debug('[APILAYER][main] API state input')

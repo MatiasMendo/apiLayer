@@ -2,6 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var StageDataSchema = new Schema({
+    verificator: {
+        type: Schema.Types.String,
+        required: true
+    },
     input: {
         type: Schema.Types.String,
         required: true
@@ -42,6 +46,10 @@ var RecordingDataSchema = new Schema({
         required: true
     },
     metadata: {
+        type: Schema.Types.Mixed,
+        required: true
+    },
+    customdata: {
         type: Schema.Types.Mixed,
         required: true
     },
