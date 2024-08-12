@@ -21,6 +21,7 @@ exports.tenant = async function(tenant) {
         let mytenants = await config.getAllTenants();
         for(idx = 0; idx < mytenants.length; idx++) {
             let tenant = mytenants[idx];
+            logger.info("[APILAYER][tenant monitor] Analyzing tenant: "+ tenant);
             //
             //analiza los segundos subidos por tenant hasta este mes
             let s = await stats.getStatsTenantMonthly(tenant);
