@@ -37,7 +37,7 @@ exports.tenant = async function(tenant) {
             seconds = (seconds < 10) ? "0" + seconds : seconds;
 
             //envía registro a cloudwatch
-            var myMetric = new cloudwatchMetrics.Metric('VoC CORE', 'Count', [{
+            let myMetric = new cloudwatchMetrics.Metric('VoC CORE', 'Count', [{
                 Name: 'Ingestor',
                 Value: tenant
                 }], 
@@ -119,7 +119,7 @@ exports.jobs = async function() {
                 let ms_error = (myjobsdata.s_error <= jobsdata[tenant].s_error)? (jobsdata[tenant].s_error - myjobsdata.s_error) : jobsdata[tenant].s_error;
 
                 //envía registro a cloudwatch
-                var myMetric = new cloudwatchMetrics.Metric('VoC CORE', 'Count', [{
+                let myMetric = new cloudwatchMetrics.Metric('VoC CORE', 'Count', [{
                     Name: 'Ingestor',
                     Value: tenant
                     }], 
