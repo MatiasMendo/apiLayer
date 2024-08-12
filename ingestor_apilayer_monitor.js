@@ -21,7 +21,7 @@ exports.tenant = async function(tenant) {
         let mytenants = await config.getAllTenants();
         for(idx = 0; idx < mytenants.length; idx++) {
             let tenant = mytenants[idx];
-            logger.info("[APILAYER][tenant monitor] Analyzing tenant: "+ tenant);
+            logger.info("[APILAYER][tenant monitor] Analyzing tenant "+ idx +"/"+ mytenants.length +": "+ tenant);
             //
             //analiza los segundos subidos por tenant hasta este mes
             let s = await stats.getStatsTenantMonthly(tenant);
@@ -94,52 +94,37 @@ exports.jobs = async function() {
         let mytenants = await config.getAllTenants();
         for(idx = 0; idx < mytenants.length; idx++) {
             let tenant = mytenants[idx];
-            if(!(tenant in jobsdata)) { // si no existe inicializa
-                let init = new Date();
-                let end = new Date();
-                init.setHours(init.getHours() - 1); //por defecto toma lo q pasó desde una hora atrás si no existe el datos
-                await updatejobsdata(tenant, init, end);
-            }
-            else {
-                let myjobsdata = { // inicializa con data guardada
-                    last: jobsdata[tenant].last,
-                    total: jobsdata[tenant].total,
-                    o_finished: jobsdata[tenant].o_finished,
-                    s_finished: jobsdata[tenant].s_finished,
-                    s_error: jobsdata[tenant].s_error
-                }
-       
-                let init = jobsdata[tenant].last;
-                let end = new Date();
-                await updatejobsdata(tenant, init, end);
 
-                let mtotal = (myjobsdata.total <= jobsdata[tenant].total)? (jobsdata[tenant].total - myjobsdata.total) : jobsdata[tenant].total;
-                let mo_finished = (myjobsdata.o_finished <= jobsdata[tenant].o_finished)? (jobsdata[tenant].o_finished - myjobsdata.o_finished) : jobsdata[tenant].o_finished;
-                let ms_finished = (myjobsdata.s_finished <= jobsdata[tenant].s_finished)? (jobsdata[tenant].s_finished - myjobsdata.s_finished) : jobsdata[tenant].s_finished;
-                let ms_error = (myjobsdata.s_error <= jobsdata[tenant].s_error)? (jobsdata[tenant].s_error - myjobsdata.s_error) : jobsdata[tenant].s_error;
+            let init = new Date();
+            init.setHours(0,0,0,0); //setea a 0 horas de este día
 
-                //envía registro a cloudwatch
-                let myMetric = new cloudwatchMetrics.Metric('VoC CORE', 'Count', [{
-                    Name: 'Ingestor',
-                    Value: tenant
-                    }], 
-                    {                 
-                        sendCallback: (err) => {
-                            if (!err) return;
-                            logger.error("Error creating cloudwatch metrics " + err);
+            await updatejobsdata(tenant, init, new Date());
 
-                        }
+            let mtotal = jobsdata[tenant].total;
+            let mo_finished = jobsdata[tenant].o_finished;
+            let ms_finished = jobsdata[tenant].s_finished;
+            let ms_error = jobsdata[tenant].s_error;
+
+            //envía registro a cloudwatch
+            let myMetric = new cloudwatchMetrics.Metric('VoC CORE', 'Count', [{
+                Name: 'Ingestor',
+                Value: tenant
+                }], 
+                {                 
+                    sendCallback: (err) => {
+                        if (!err) return;
+                        logger.error("Error creating cloudwatch metrics " + err);
+
                     }
-                );
+                }
+            );
                 
-                myMetric.put(ms_finished, 'procesado', "Count");
-                myMetric.put(ms_error, 'error', "Count");
-                myMetric.put(mo_finished, 'objetos', "Count");
+            myMetric.put(ms_finished, 'procesado', "Count");
+            myMetric.put(ms_error, 'error', "Count");
+            myMetric.put(mo_finished, 'objetos', "Count");
                 //
-                //logea registro
-                logger.info("[APILAYER][jobs monitor] {'tenant': '"+ tenant + "', 'input': "+ mtotal +", 'uploaded': "+ mo_finished +", 'seconds': "+ ms_finished +"}")
-            }
-
+            //logea registro
+            logger.info("[APILAYER][jobs monitor] {'tenant': '"+ tenant + "', 'input': "+ mtotal +", 'uploaded': "+ mo_finished +", 'seconds': "+ ms_finished +"}")
         }
     }
     catch(e) {
