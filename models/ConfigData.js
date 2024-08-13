@@ -86,6 +86,10 @@ var StatsconfigDataSchema = new Schema({
     microservices: {
         type: Schema.Types.Mixed,
         required: true
+    },
+    addons: {
+        type: Schema.Types.Mixed,
+        required: false
     }
 })
 
