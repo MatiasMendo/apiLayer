@@ -26,7 +26,7 @@ exports.initjob = async function (otenant_id, ojob_id, ojob_time, ototal) {
 
     const StatsjobData = mongoo.instance().Models(otenant_id).StatsjobDataSchema;
     var sjddoc = new StatsjobData(document);
-    sjddoc.save();
+    return sjddoc.save();
 }
 
 

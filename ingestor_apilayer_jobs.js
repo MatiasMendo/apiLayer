@@ -98,13 +98,13 @@ async function insert_job(body, res, newjob) {
             let mytenant_id = body.tenant_id;
             let myjob_id = uuidv4();
 
-            res.send({
-                'tenant_id': mytenant_id,
-                'job_id': myjob_id,
-                'total': 0
+            statsjob.initjob(mytenant_id, myjob_id, new Date(), 0).then(() => {
+                res.send({
+                    'tenant_id': mytenant_id,
+                    'job_id': myjob_id,
+                    'total': docs.length
+                });
             });
-
-            statsjob.initjob(mytenant_id, myjob_id, new Date(), 0);
         }
         return;
     }
@@ -117,18 +117,24 @@ async function insert_job(body, res, newjob) {
     RecordingData.insertMany(mydocuments, { lean: false, throwOnValidationError: true })
         .then((docs) => {
             logger.debug("[APILAYER][new] Inserted " + docs.length + " documents to DB");
-            res.send({
-                'tenant_id': mytenant_id,
-                'job_id': myjob_id,
-                'total': docs.length
-            });
-
+            
             //inserta estad sticas
             if (newjob) {
-                statsjob.initjob(mytenant_id, myjob_id, myjob_time, docs.length);
+                statsjob.initjob(mytenant_id, myjob_id, myjob_time, docs.length).then(() => {
+                    res.send({
+                        'tenant_id': mytenant_id,
+                        'job_id': myjob_id,
+                        'total': docs.length
+                    });
+                });
             }
             else {
                 statsjob.appendjob(mytenant_id, myjob_id, docs.length);
+                res.send({
+                    'tenant_id': mytenant_id,
+                    'job_id': myjob_id,
+                    'total': docs.length
+                });
             }
  
         }).catch((e) => {
