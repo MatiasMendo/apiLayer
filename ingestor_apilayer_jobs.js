@@ -98,11 +98,12 @@ async function insert_job(body, res, newjob) {
             let mytenant_id = body.tenant_id;
             let myjob_id = uuidv4();
 
-            statsjob.initjob(mytenant_id, myjob_id, new Date(), 0).then(() => {
+            statsjob.initjob(mytenant_id, myjob_id, new Date(), 0, 0).then(() => {
                 res.send({
                     'tenant_id': mytenant_id,
                     'job_id': myjob_id,
-                    'total': docs.length
+                    'total': docs.length,
+                    'seconds': 0
                 });
             });
         }
@@ -113,6 +114,12 @@ async function insert_job(body, res, newjob) {
     let myjob_id = mydocuments[0].job_id;
     let myjob_time = mydocuments[0].job_time;
 
+    //extrea los segundos a insertar o agregar al job
+    let jobseconds = 0;
+    mydocuments.forEach((m) => {
+        jobseconds += m.duration;
+    });
+
     let RecordingData = mongoo.instance().Models(mytenant_id).RecordingDataSchema;
     RecordingData.insertMany(mydocuments, { lean: false, throwOnValidationError: true })
         .then((docs) => {
@@ -120,20 +127,29 @@ async function insert_job(body, res, newjob) {
             
             //inserta estad sticas
             if (newjob) {
-                statsjob.initjob(mytenant_id, myjob_id, myjob_time, docs.length).then(() => {
+                statsjob.initjob(mytenant_id, myjob_id, myjob_time, docs.length, jobseconds).then(() => {
                     res.send({
                         'tenant_id': mytenant_id,
                         'job_id': myjob_id,
-                        'total': docs.length
+                        'total': docs.length,
+                        'seconds': jobseconds
                     });
                 });
             }
             else {
-                statsjob.appendjob(mytenant_id, myjob_id, docs.length);
-                res.send({
-                    'tenant_id': mytenant_id,
-                    'job_id': myjob_id,
-                    'total': docs.length
+                statsjob.appendjob(mytenant_id, myjob_id, docs.length, jobseconds).then((doc) => {
+                    if (null == doc) {
+                        logger.info("[APILAYER][appendjob] Error in parameter job_id " + ojob_id);
+                        res.status(400).send("Error in job_id");
+                    }
+                    else {
+                        res.send({
+                            'tenant_id': mytenant_id,
+                            'job_id': myjob_id,
+                            'total': docs.length,
+                            'seconds': doc.seconds.total
+                        });
+                    }
                 });
             }
  

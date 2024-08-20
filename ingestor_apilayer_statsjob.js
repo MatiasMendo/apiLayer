@@ -3,7 +3,7 @@ const mongoo = require('./ingestor_apilayer_mongoo.js');
 const config = require('./ingestor_apilayer_config.js');
 
 //inserta nuevo job e inicializa contadores
-exports.initjob = async function (otenant_id, ojob_id, ojob_time, ototal) {
+exports.initjob = async function (otenant_id, ojob_id, ojob_time, ototal, stotal) {
 
     let document = {
         tenant_id: otenant_id,
@@ -19,6 +19,7 @@ exports.initjob = async function (otenant_id, ojob_id, ojob_time, ototal) {
             quota:0
         },
         seconds: {
+            total: stotal,
             finished: 0,
             error: 0
         }
@@ -32,19 +33,18 @@ exports.initjob = async function (otenant_id, ojob_id, ojob_time, ototal) {
 
 
 //agrega archivos a job existente, incrementa contadores iniciales
-exports.appendjob = async function (otenant_id, ojob_id, ototal) {
+exports.appendjob = async function (otenant_id, ojob_id, ototal, stotal) {
 
     const StatsjobData = mongoo.instance().Models(otenant_id).StatsjobDataSchema;
-    StatsjobData.findOneAndUpdate({ "job_id": ojob_id }, {
+    return StatsjobData.findOneAndUpdate({ "job_id": ojob_id }, {
         $inc: {
             "files.total": ototal,
-            "files.idle": ototal
+            "files.idle": ototal,
+            "seconds.total": stotal
         }
-    }).exec().then((doc) => {
-        if (null == doc) {
-            logger.info("[APILAYER][appendjob-stats] Error in parameter job_id " + ojob_id);
-        }
-    });
+    },{
+        new: true
+    }).exec();
 }
 
 
@@ -70,7 +70,7 @@ exports.retrieved = async function (otenant_id, ojob_id, quotaxceeded) {
         $inc: query
     }).exec().then((doc) => {
         if (null == doc) {
-            logger.info("[APILAYER][appendjob-stats] Error in parameter job_id " + ojob_id);
+            logger.info("[APILAYER][retrieved-stats] Error in parameter job_id " + ojob_id);
         }
     });
 }

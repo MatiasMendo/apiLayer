@@ -3,6 +3,10 @@ var Schema = mongoose.Schema;
 
 
 var SecondsDataSchema = new Schema({
+    total: {
+        type: Schema.Types.Number,
+        required: true
+    },
     finished: {
         type: Schema.Types.Number,
         required: true
