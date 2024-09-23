@@ -40,10 +40,15 @@ function check_andbuild(body, newjob, maxelem) {
     let idx = 0; 
     body.audios.forEach((o) => {
         let obj = {}
+        console.log(typeof o.duration)
         obj.tenant_id = body.tenant_id;
         obj.job_id = myjob_id;
         obj.job_time = new Date();
         obj.source = o.source;
+        console.log(Number.isInteger(o.duration))
+        if ((typeof o.duration != "number") || !Number.isInteger(o.duration)) {
+            throw "duration param must be an integer"
+        }
         obj.duration = o.duration;
         obj.metadata = o.metadata;
         obj.file_id = uuidv4();
