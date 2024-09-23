@@ -79,5 +79,7 @@ var RecordingDataSchema = new Schema({
     }
 })
 
+RecordingDataSchema.index({ file_id: 1 }, { unique: true });
+RecordingDataSchema.index({ job_id: 1 });
 //const RecordingData = mongoose.model('GenericRecordingData', RecordingDataSchema);
 module.exports = RecordingDataSchema;

@@ -50,6 +50,19 @@ class Mongoo {
                     RecordingDataSchema: mongoose.model(tenant + '_data', RecordingDataSchema),
                     StatsjobDataSchema: mongoose.model(tenant + '_stats', StatsjobDataSchema)
                 }
+
+                this.mytenants[tenant].RecordingDataSchema.createIndexes().then(() => {
+                    logger.info("[APILAYER][Mongoo] => RecordingDataSchema indexes created ")
+                  }).catch(err => {
+                    logger.info( "[APILAYER][Mongoo] => RecordingDataSchema indexes creation error: " + err);
+                  });
+
+                  this.mytenants[tenant].StatsjobDataSchema.createIndexes().then(() => {
+                    logger.info("[APILAYER][Mongoo] => StatsjobDataSchema indexes created "
+                    )
+                  }).catch(err => {
+                    logger.info( "[APILAYER][Mongoo] => StatsjobDataSchema indexes creation error: " + err);
+                  });
             }
 
             return this.mytenants[tenant];
