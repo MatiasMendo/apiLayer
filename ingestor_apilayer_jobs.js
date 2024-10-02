@@ -97,7 +97,7 @@ async function insert_job(body, res, newjob) {
 
     let RecordingData = mongoo.instance().Models(mytenant_id).RecordingDataSchema;
 
-    logger.info(`Documentos que se quieren insertar ${newDocuments.length}`)
+    logger.info(`Documentos que se quieren insertar ${mydocuments.length}`)
 
     const documentIds = mydocuments.map(doc => doc.original_source);
 
