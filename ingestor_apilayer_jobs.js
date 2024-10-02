@@ -37,7 +37,7 @@ function check_andbuild(body, newjob, maxelem) {
         myjob_id = body.job_id;
     }
 
-    let idx = 0; 
+    let idx = 0;
     body.audios.forEach((o) => {
         let obj = {}
         console.log(typeof o.duration)
@@ -45,7 +45,8 @@ function check_andbuild(body, newjob, maxelem) {
         obj.job_id = myjob_id;
         obj.job_time = new Date();
         obj.source = o.source;
-        console.log(Number.isInteger(o.duration))
+        obj.original_source = o.source;
+        // console.log(Number.isInteger(o.duration))
         if ((typeof o.duration != "number") || !Number.isInteger(o.duration)) {
             throw "duration param must be an integer"
         }
@@ -92,22 +93,46 @@ async function insert_job(body, res, newjob) {
         res.status(400).send(e.message)
         return;
     }
-    
-    if (0 == mydocuments.length) {
-        if(newjob == false) { //
+    let mytenant_id = body.tenant_id;
+
+    let RecordingData = mongoo.instance().Models(mytenant_id).RecordingDataSchema;
+
+    const documentIds = mydocuments.map(doc => doc.original_source);
+
+    // Busca duplicados antes de insertar
+    const existingDocuments = await RecordingData.find({ original_source: { $in: documentIds } }).select('original_source');
+    const existingSources = existingDocuments.map(doc => doc.original_source);
+
+    // Filtra los documentos que no están duplicados
+    const newDocuments = mydocuments.filter(doc => !existingSources.includes(doc.original_source));
+
+
+
+    if (0 == newDocuments.length) {
+        if(newjob == false && 0 == mydocuments.length){
             logger.debug('[APILAYER][new] audios array is empty appending data to job, returning code 400')
             res.status(400).send()
         }
-        else { //solo para nuevos jobs, se puede crear vacío
+        else if(0 != mydocuments.length && newjob == false) { //solo para nuevos jobs, se puede crear vacío
+            let myjob_id = mydocuments[0].job_id;
+
+            //TODO: Falta hacer que saque el job real con el total y seconds
+            res.send({
+                'tenant_id': mytenant_id,
+                'job_id': myjob_id,
+                'total': 0,
+                'seconds': 0
+            });
+        }
+        else {
             logger.debug('[APILAYER][new] audios array is empty, returning an empty job');
-            let mytenant_id = body.tenant_id;
             let myjob_id = uuidv4();
 
             statsjob.initjob(mytenant_id, myjob_id, new Date(), 0, 0).then(() => {
                 res.send({
                     'tenant_id': mytenant_id,
                     'job_id': myjob_id,
-                    'total': docs.length,
+                    'total': 0,
                     'seconds': 0
                 });
             });
@@ -115,22 +140,21 @@ async function insert_job(body, res, newjob) {
         return;
     }
 
-    let mytenant_id = mydocuments[0].tenant_id;
     let myjob_id = mydocuments[0].job_id;
     let myjob_time = mydocuments[0].job_time;
 
-    //extrea los segundos a insertar o agregar al job
-    let jobseconds = 0;
-    mydocuments.forEach((m) => {
-        jobseconds += m.duration;
-    });
+    logger.info(`Documentos a insertar ${newDocuments.length}`)
 
-    let RecordingData = mongoo.instance().Models(mytenant_id).RecordingDataSchema;
-    RecordingData.insertMany(mydocuments, { lean: false, throwOnValidationError: true })
+    RecordingData.insertMany(newDocuments, { lean: false, throwOnValidationError: true, ordered: false })
         .then((docs) => {
             logger.debug("[APILAYER][new] Inserted " + docs.length + " documents to DB");
-            
-            //inserta estad sticas
+            //extrea los segundos a insertar o agregar al job
+            let jobseconds = 0;
+            docs.forEach((m) => {
+                jobseconds += m.duration;
+            });
+
+            //inserta estadísticas
             if (newjob) {
                 statsjob.initjob(mytenant_id, myjob_id, myjob_time, docs.length, jobseconds).then(() => {
                     res.send({
@@ -157,7 +181,7 @@ async function insert_job(body, res, newjob) {
                     }
                 });
             }
- 
+
         }).catch((e) => {
             logger.error('[APILAYER][new] catching db InsertMany error ' + e);
             res.status(500).send();
@@ -186,18 +210,18 @@ exports.append_job = async function (body, res) {
     statsjob.getStatsObject(body.tenant_id, body.job_id).then((obj)=>{
         if(obj != null) {
             insert_job(body, res, false);
-        } 
+        }
         else {
             logger.error("[APILAYER][append] Error appending, no exist job_id: " + body.job_id);
             res.status(400).send("no exist job_id");
         }
     });
 
-    
+
 }
 
 //
-//extrae registros desde mongodb. Gatillado por microservicios input 
+//extrae registros desde mongodb. Gatillado por microservicios input
 //
 async function get_myjob(body, res, uservice) {
 
@@ -206,20 +230,20 @@ async function get_myjob(body, res, uservice) {
         res.status(400).send();
         return;
     }
-    
+
     if ((undefined == body.limit) || (typeof body.limit != "number")) {
         logger.info("[APILAYER][getjob] Error in parameter limit");
         res.status(400).send();
         return;
     }
 
-     // Setea la query a realizar a los rgistros de acuerdo a la configuración y el uservicio q 
+     // Setea la query a realizar a los rgistros de acuerdo a la configuración y el uservicio q
     // realiza la consulta
     //
     let myquery = {
         "status": "IDLE"
     };
-        
+
     let qt = quota.getObject(body.tenant_id); //chequeará quota
     const overhead = 5;
     let RecordingData = mongoo.instance().Models(body.tenant_id).RecordingDataSchema;
@@ -245,7 +269,7 @@ async function get_myjob(body, res, uservice) {
                     statsjob.retrieved(doc.tenant_id, doc.job_id, true);
                 }
                 else if(quotareached == false) { //entra si quota no está alcanzada
-                    
+
                     if(uservice == 'input') {
                         documents[idx] = {
                             "tenant_id": doc.tenant_id,
@@ -258,7 +282,7 @@ async function get_myjob(body, res, uservice) {
 
                         //INPUT fuerza stage verificator a terminado
                         doc.stage.verificator = "FINISHED";
-                        
+
                     }
                     else if(uservice == 'verificator'){
                         documents[idx] = {
@@ -284,7 +308,7 @@ async function get_myjob(body, res, uservice) {
                 }
                 idx++;
             }
-        } 
+        }
             // Envia los audios
         res.send({
             "total": idx,
@@ -348,5 +372,3 @@ exports.remove_job = async function (tenant_id, _job_id) {
         logger.info("[APILAYER][removejob] Tenant: "+ tenant_id +", job: "+ _job_id + ", removed: " + o.deletedCount +" objects");
     });
 }
-
-     

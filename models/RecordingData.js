@@ -41,6 +41,11 @@ var RecordingDataSchema = new Schema({
         type: Schema.Types.String,
         required: true
     },
+    original_source: {
+        type: Schema.Types.String,
+        required: true,
+        unique: true
+    },
     duration: {
         type: Schema.Types.Number,
         required: true
