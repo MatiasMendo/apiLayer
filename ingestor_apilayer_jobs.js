@@ -97,6 +97,8 @@ async function insert_job(body, res, newjob) {
 
     let RecordingData = mongoo.instance().Models(mytenant_id).RecordingDataSchema;
 
+    logger.info(`Documentos que se quieren insertar ${newDocuments.length}`)
+
     const documentIds = mydocuments.map(doc => doc.original_source);
 
     // Busca duplicados antes de insertar
@@ -143,7 +145,7 @@ async function insert_job(body, res, newjob) {
     let myjob_id = mydocuments[0].job_id;
     let myjob_time = mydocuments[0].job_time;
 
-    logger.info(`Documentos a insertar ${newDocuments.length}`)
+    logger.info(`Documentos que se insertarán ${newDocuments.length}`)
 
     RecordingData.insertMany(newDocuments, { lean: false, throwOnValidationError: true, ordered: false })
         .then((docs) => {
