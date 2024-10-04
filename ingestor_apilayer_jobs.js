@@ -99,14 +99,18 @@ async function insert_job(body, res, newjob) {
 
     logger.info(`Documentos que se quieren insertar ${mydocuments.length}`)
 
-    const documentIds = mydocuments.map(doc => doc.original_source);
+    let uniqueDocuments = Array.from(
+        new Map(mydocuments.map(doc => [doc.source, doc])).values()
+    );
+
+    const documentIds = uniqueDocuments.map(doc => doc.original_source);
 
     // Busca duplicados antes de insertar
     const existingDocuments = await RecordingData.find({ original_source: { $in: documentIds } }).select('original_source');
     const existingSources = existingDocuments.map(doc => doc.original_source);
 
     // Filtra los documentos que no están duplicados
-    const newDocuments = mydocuments.filter(doc => !existingSources.includes(doc.original_source));
+    const newDocuments = uniqueDocuments.filter(doc => !existingSources.includes(doc.original_source));
 
 
 
@@ -116,7 +120,7 @@ async function insert_job(body, res, newjob) {
             res.status(400).send()
         }
         else if(0 != mydocuments.length && newjob == false) { //solo para nuevos jobs, se puede crear vacío
-            let myjob_id = mydocuments[0].job_id;
+            let myjob_id = uniqueDocuments[0].job_id;
 
             //TODO: Falta hacer que saque el job real con el total y seconds
             res.send({
