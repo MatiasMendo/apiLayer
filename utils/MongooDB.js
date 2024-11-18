@@ -3,7 +3,7 @@ const logger = require("./Logger.js");
 const dotenv = require('dotenv');
 const path = require('path');
 
-const caFilePath = path.join(__dirname, '../global-bundle.pem');
+//const caFilePath = path.join(__dirname, '../global-bundle.pem');
 dotenv.config({path: path.join(__dirname, '../.env')});
 
 class MongooDB {
@@ -37,7 +37,7 @@ class MongooDB {
                     replicaSet: "rs0",
                     retryWrites: false,
                     tlsAllowInvalidCertificates: true,
-                    tlsCAFile: caFilePath,
+                    //tlsCAFile: caFilePath,
                     dbName: this.databaseName,
                     authSource: this.databaseName
                 }

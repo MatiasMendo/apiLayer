@@ -25,7 +25,8 @@ exports.get = async function (body, res) {
     }
     
     getConfigurationObjectQuery(body.tenant_id).then((query) => {
-        if(null != query) {
+        if(null != query && query != undefined && query[0]) {
+          console.log(query)
             // Envia la respuesta con la configuración del tenant
             res.send(query[0]);
             logger.info("[APILAYER][getconfig] Returning configuration version "+ query[0].version +", to tenant_id: "+ body.tenant_id );

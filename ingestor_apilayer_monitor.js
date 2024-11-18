@@ -4,14 +4,14 @@ const apijobs = require('./ingestor_apilayer_jobs.js');
 const config = require('./ingestor_apilayer_config.js');
 const logger = require('./utils/Logger.js');
 const dotenv = require ('dotenv');
-const cloudwatchMetrics = require('cloudwatch-metrics');
+//const cloudwatchMetrics = require('cloudwatch-metrics');
 
 dotenv.config();
 
 const default_retention = 60; //retención ed data máximo 90 días
-cloudwatchMetrics.initialize({
-    region: 'us-east-1'
-});
+// cloudwatchMetrics.initialize({
+//     region: 'us-east-1'
+// });
 
 
 // Extrea indicadores que se ejecutan una vez al día

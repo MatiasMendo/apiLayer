@@ -1,0 +1,43 @@
+{
+    "tenant_id": "claro_CA",
+    "active": true,
+    "description": "Canada_centro_amaerica",
+    "folder_base": "C:Users/mendo/OneDrive/Escritorio/claro/ingestor_core/tenants",
+    "data_retention": 60,
+    "microservices": {
+      "input": {
+        "name": "input",
+        "previous": "",
+        "type": "genesys-cloud",
+        "credentials": {
+          "client_id": "4210fa06-e827-45dd-8ddb-22c09c2bdab3",
+          "client_secret": "XIOxJluCN66sRdN-ErL2N-rI89HbGGmq-gf9HjZnPF8"
+          
+        },
+        "addons": {
+          "chunk_size": 30,
+          "wakeup_s": 10,
+          "url": "http://127.0.0.1:9992/downloader"
+        }
+      },
+      "converter": {
+        "name": "converter",
+        "previous": "addon_downloader"
+      },
+      "zipper": {
+        "name": "zipper",
+        "previous": "converter"
+      },
+      "uploader": {
+        "name": "uploader",
+        "previous": "zipper",
+        "bucket": "bucket-grabaciones-bac",
+        "bucket_folder": "ZipsTest"
+      }
+    },
+    "quota": {
+      "job": 100,
+      "monthly": 200
+    },
+    "version": 1
+  }

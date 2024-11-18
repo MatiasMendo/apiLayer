@@ -49,7 +49,7 @@
     },
     "tipo_llamada": {
       "type": "string",
-	  "description": "Call Direction"
+	  "description": "Call Direction",
 	  "pattern": "^(In|Out)bound$"
     },
     "Custom_data_01": {
